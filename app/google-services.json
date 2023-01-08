@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "776966267201",
+    "project_id": "food-app-2fb04",
+    "storage_bucket": "food-app-2fb04.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:776966267201:android:6323408028c830787f01c0",
+        "android_client_info": {
+          "package_name": "vungnv.com.foodapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "776966267201-jf7n5llqe28t12r2lf31hosaut6vhpis.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDOqvpzZHLSZxeeN0EEED41G-1nk5xNKEU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "776966267201-jf7n5llqe28t12r2lf31hosaut6vhpis.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:776966267201:android:06e0be5254d3983a7f01c0",
+        "android_client_info": {
+          "package_name": "vungnv.com.foodappmerchant"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "776966267201-jf7n5llqe28t12r2lf31hosaut6vhpis.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDOqvpzZHLSZxeeN0EEED41G-1nk5xNKEU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "776966267201-jf7n5llqe28t12r2lf31hosaut6vhpis.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
