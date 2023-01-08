@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.graphics.drawable.DrawerArrowDrawable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
@@ -34,13 +33,14 @@ import vungnv.com.foodappmerchant.ui.account.MangerAccountFragment;
 import vungnv.com.foodappmerchant.ui.home.OrderFragment;
 import vungnv.com.foodappmerchant.ui.infomation.InformationFragment;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
     private DrawerLayout drawerLayout;
     private Toolbar toolbar;
     private NavigationView navigationView;
     private ImageView imgBack;
     private View mHeaderView;
     private TextView tvManagerAccount;
+    public static final  String CHANNEL_ID = "my_channel_id";
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 onBackPressed();
             }
         });
-        createNotification(MainActivity.this, "Tiêu đề", "Nội dung");
+//        createNotification(MainActivity.this, "Tiêu đề", "Nội dung");
         createNotificationChannel(MainActivity.this);
 
         tvManagerAccount.setOnClickListener(new View.OnClickListener() {
@@ -134,11 +134,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // NotificationChannel for Android 8.0 and higher
         NotificationManager notificationManager =
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        String channelId = "my_channel_id";
+
         CharSequence channelName = "My Channel";
         int importance = NotificationManager.IMPORTANCE_HIGH;
         NotificationChannel notificationChannel = null;
-        notificationChannel = new NotificationChannel(channelId, channelName, importance);
+        notificationChannel = new NotificationChannel(CHANNEL_ID, channelName, importance);
         notificationChannel.enableLights(true);
         notificationChannel.setLightColor(Color.RED);
         notificationChannel.enableVibration(true);
@@ -153,7 +153,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "my_channel_id")
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.drawable.icon_notification)
                 .setContentTitle(title)
                 .setContentText(message)
@@ -173,4 +173,5 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             super.onBackPressed();
         }
     }
+
 }
