@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">FoodYum Merchant</string>
+    <string name="mail_box">Hộp thư</string>
+    <string name="order_history">Lịch sử đặt hàng</string>
+    <string name="order_complaint">Đơn hàng khiếu nại</string>
+    <string name="restaurant_manager">Quản lý nhà hàng</string>
+    <string name="menu_manager">Quản lý menu</string>
+    <string name="statistical">Thống kê</string>
+    <string name="app_information">Thông tin ứng dụng</string>
+    <string name="default_version">v1.0.0.0</string>
+    <string name="food_yum_kitchen">FoodYum Kitchen</string>
+    <string name="manager_information">Thông tin người quản lý</string>
+    <string name="todo">TODO</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>
