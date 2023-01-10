@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">FoodYum Merchant</string>
+    <string name="mail_box">Mailbox</string>
+    <string name="order_history">Order history</string>
+    <string name="order_complaint">Complaint order</string>
+    <string name="restaurant_manager">Restaurant manager</string>
+    <string name="menu_manager">Manage menus</string>
+    <string name="statistical">Statistical</string>
+    <string name="app_information">Application Information</string>
+    <string name="default_version">v1.0.0.0</string>
+    <string name="food_yum_kitchen">FoodYum Kitchen</string>
+    <string name="manager_information">Manager Information</string>
+    <string name="todo">TODO</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="remember_me">Remember me</string>
+    <string name="register">Register</string>
+    <string name="do_not_have_acc">No account?</string>
+    <string name="sign_in">Sign in</string>
+    <string name="pass">Pass</string>
+    <string name="email">Email</string>
+    <string name="vi">VI</string>
+    <string name="oops">OOPS!</string>
+    <string name="no_internet_connection">No internet connection !</string>
+    <string name="please_check_your_connection">Please check your connection !!</string>
+    <string name="retry">Retry</string>
+    <string name="confirm_pass">Confirm password</string>
+    <string name="already_have_an_account">Already have an account</string>
+    <string name="add">Add</string>
+    <string name="find_in_the_menu">Find in the menu</string>
+    <string name="edit">Edit</string>
+    <string name="list_of_dishes">List of dishes</string>
+    <string name="appetizer">Appetizer</string>
+    <string name="account_management">Account Management</string>
+    <string name="change_password">Change password</string>
+    <string name="information_account">Account Information</string>
+    <string name="name">Name</string>
+    <string name="default_name">Full Name User</string>
+    <string name="phone_number">Phone number</string>
+    <string name="email_address">Email address</string>
+    <string name="default_phone_number">0987654123</string>
+    <string name="default_email">foodapp@gmail.com</string>
+    <string name="logout">Log out</string>
+</resources>
