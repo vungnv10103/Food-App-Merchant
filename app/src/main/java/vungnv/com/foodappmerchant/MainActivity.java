@@ -10,6 +10,7 @@ import androidx.core.app.NotificationManagerCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.annotation.SuppressLint;
 import android.app.NotificationChannel;
@@ -21,6 +22,7 @@ import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -29,18 +31,33 @@ import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
 
+import java.util.List;
+
+import vungnv.com.foodappmerchant.constant.Constant;
+import vungnv.com.foodappmerchant.model.CategoryModel;
+import vungnv.com.foodappmerchant.model.ProductModel;
+import vungnv.com.foodappmerchant.model.ProductSlideShowModel;
+import vungnv.com.foodappmerchant.model.UserModel;
 import vungnv.com.foodappmerchant.ui.account.MangerAccountFragment;
 import vungnv.com.foodappmerchant.ui.home.OrderFragment;
 import vungnv.com.foodappmerchant.ui.infomation.InformationFragment;
+import vungnv.com.foodappmerchant.ui.manager_menu.ManageMenuActivity;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, Constant {
+
     private DrawerLayout drawerLayout;
     private Toolbar toolbar;
     private NavigationView navigationView;
     private ImageView imgBack;
     private View mHeaderView;
-    private TextView tvManagerAccount;
-    public static final  String CHANNEL_ID = "my_channel_id";
+    private TextView tvHome, tvManagerAccount;
+    public static final String CHANNEL_ID = "my_channel_id";
+
+
+    private List<UserModel> listUser;
+    private List<ProductModel> listProduct;
+    private List<ProductSlideShowModel> listSlideShow;
+    private List<CategoryModel> listCate;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -49,10 +66,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setContentView(R.layout.activity_main);
 
         init();
+        // getData();
 
-        toolbar.setTitle("Đơn hàng");
+
+        toolbar.setTitle(ORDER);
         toolbar.setTitleTextColor(Color.WHITE);
-        toolbar.setTitleMarginStart(250);
+
 
         imgBack.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -60,8 +79,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 onBackPressed();
             }
         });
-//        createNotification(MainActivity.this, "Tiêu đề", "Nội dung");
+        //createNotification(MainActivity.this, NOTIFICATION, MESSAGE);
         createNotificationChannel(MainActivity.this);
+
+
+        tvHome.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                finishAffinity();
+
+            }
+        });
 
         tvManagerAccount.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -77,7 +106,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         navigationView.setItemIconTintList(ColorStateList.valueOf(Color.WHITE));
         navigationView.setNavigationItemSelectedListener(this);
-        replaceFragment(OrderFragment.newInstance());
+        //replaceFragment(OrderFragment.newInstance());
+        Fragment initialFragment = new OrderFragment();
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.frameLayout, initialFragment)
+                .addToBackStack(null)
+                .commit();
 
     }
 
@@ -88,7 +122,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mHeaderView = navigationView.getHeaderView(0);
         imgBack = mHeaderView.findViewById(R.id.imgBack);
         tvManagerAccount = mHeaderView.findViewById(R.id.tvManagerAccount);
-
+        tvHome = mHeaderView.findViewById(R.id.tvHome);
     }
 
     @SuppressLint("NonConstantResourceId")
@@ -109,7 +143,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 Toast.makeText(this, "Quản lý nhà hàng", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.menu_manager:
-                Toast.makeText(this, "Quản lý menu", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(MainActivity.this, ManageMenuActivity.class));
                 break;
             case R.id.statistical:
                 Toast.makeText(this, "Thống kê", Toast.LENGTH_SHORT).show();
@@ -126,6 +160,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void replaceFragment(Fragment fra) {
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.frameLayout, fra);
+        fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }
 
@@ -147,6 +182,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     }
 
+    @SuppressLint("UnspecifiedImmutableFlag")
     private void createNotification(Context context, String title, String message) {
         // Create an explicit intent for an Activity in your app
         Intent intent = new Intent(context, MainActivity.class);
@@ -154,7 +190,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
-                .setSmallIcon(R.drawable.icon_notification)
+                .setSmallIcon(R.drawable.food_app_merchant_icon)
                 .setContentTitle(title)
                 .setContentText(message)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
@@ -164,6 +200,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
         notificationManager.notify(0, builder.build());
     }
+
+    private void getData() {
+        int temp = 0;
+//        Toast.makeText(this, ""+ listProduct.size(), Toast.LENGTH_SHORT).show();
+
+//        FirebaseDatabase database = FirebaseDatabase.getInstance();
+//        DatabaseReference reference = database.getReference("my_path");
+//        reference.setValue(listCate, new DatabaseReference.CompletionListener() {
+//            @Override
+//            public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
+//                Toast.makeText(getApplicationContext(), "Thàng công", Toast.LENGTH_SHORT).show();
+//            }
+//        });
+
+
+    }
+
 
     @Override
     public void onBackPressed() {
