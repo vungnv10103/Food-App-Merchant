@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
@@ -21,6 +22,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 import vungnv.com.foodappmerchant.R;
+import vungnv.com.foodappmerchant.activities.AddProductActivity;
 import vungnv.com.foodappmerchant.adapters.ListOfDishesAdapter;
 import vungnv.com.foodappmerchant.constant.Constant;
 import vungnv.com.foodappmerchant.dao.DishesDAO;
@@ -60,7 +62,7 @@ public class ManageMenuActivity extends AppCompatActivity implements Constant, S
             @Override
             public void onClick(View v) {
                 //
-                Toast.makeText(ManageMenuActivity.this, "clicked", Toast.LENGTH_SHORT).show();
+               startActivity(new Intent(ManageMenuActivity.this, AddProductActivity.class));
             }
         });
         edSearch.addTextChangedListener(new TextWatcher() {
@@ -102,7 +104,7 @@ public class ManageMenuActivity extends AppCompatActivity implements Constant, S
                 Toast.makeText(ManageMenuActivity.this, "clicked", Toast.LENGTH_SHORT).show();
             }
         });
-//        insertDefault();
+       // insertDefault();
         listDishes();
     }
 
@@ -121,7 +123,7 @@ public class ManageMenuActivity extends AppCompatActivity implements Constant, S
 
     private void insertDefault() {
         itemDishes = new DishesModel();
-        itemDishes.name = "Món khai vị";
+        itemDishes.name = "Phở";
         if (dishesDAO.insert(itemDishes) > 0) {
             Log.d(TAG, "insert data to db Dishes success: ");
         }

@@ -50,7 +50,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, MainActivity.CHANNEL_ID)
                 .setContentTitle(title)
                 .setContentText(message)
-                .setSmallIcon(R.drawable.icon_notification)
+                .setSmallIcon(R.drawable.food_app_merchant_icon)
                 .setContentIntent(pendingIntent);
 
         Notification notification = builder.build();

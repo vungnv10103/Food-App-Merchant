@@ -18,15 +18,17 @@ public class DbUser extends SQLiteOpenHelper implements Constant {
     public void onCreate(SQLiteDatabase db) {
 
         String createTableUser = "create table User(" +
-                "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "stt INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "id TEXT not null," +
+                "status INTEGER not null," +
                 "img TEXT ," +
-                "name TEXT ," +
+                "name TEXT not null," +
                 "email TEXT not null," +
                 "pass TEXT not null," +
-                "phoneNumber TEXT ," +
-                "searchHistory TEXT ," +
+                "phoneNumber TEXT not null," +
+                "restaurantName TEXT not null," +
                 "feedback TEXT ," +
-                "coordinates TEXT ," +
+                "coordinates TEXT not null," +
                 "address TEXT not null)";
         db.execSQL(createTableUser);
     }
