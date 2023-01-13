@@ -53,6 +53,22 @@ public class ListOfDishesAdapter extends RecyclerView.Adapter<ListOfDishesAdapte
         return list.size();
     }
 
+    public static class viewHolder extends RecyclerView.ViewHolder {
+        TextView tvTitle;
+
+        public viewHolder(@NonNull View itemView) {
+            super(itemView);
+            tvTitle = itemView.findViewById(R.id.tvTitleDishes);
+            itemView.setOnClickListener(v -> {
+                Intent intent = new Intent(v.getContext(), ShowDetailItemDishesActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putString("name", list.get(getLayoutPosition()).name);
+                intent.putExtra("data-type", bundle);
+                v.getContext().startActivity(intent);
+            });
+
+        }
+    }
     @Override
     public Filter getFilter() {
         return new Filter() {
@@ -83,22 +99,5 @@ public class ListOfDishesAdapter extends RecyclerView.Adapter<ListOfDishesAdapte
                 notifyDataSetChanged();
             }
         };
-    }
-
-    public static class viewHolder extends RecyclerView.ViewHolder {
-        TextView tvTitle;
-
-        public viewHolder(@NonNull View itemView) {
-            super(itemView);
-            tvTitle = itemView.findViewById(R.id.tvTitleDishes);
-            itemView.setOnClickListener(v -> {
-                Intent intent = new Intent(v.getContext(), ShowDetailItemDishesActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putString("name", list.get(getLayoutPosition()).name);
-                intent.putExtra("data-type", bundle);
-                v.getContext().startActivity(intent);
-            });
-
-        }
     }
 }

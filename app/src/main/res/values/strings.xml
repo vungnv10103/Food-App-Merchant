@@ -48,4 +48,12 @@
     <string name="pass_confirm">Xác nhận mật khẩu</string>
     <string name="full_name">Họ và tên</string>
     <string name="change_information">Thay đổi thông tin cá nhân</string>
+    <string name="category">Thể loại</string>
+    <string name="default_desc">Mô tả</string>
+    <string name="price">Giá</string>
+    <string name="product_name">Tên sản phẩm</string>
+    <string name="add_product">Thêm sản phẩm mới</string>
+    <string name="waiting_time">Thời gian chờ</string>
+    <string name="choose_a_photo">Chọn ảnh</string>
+    <string name="open_camera">Mở camera</string>
 </resources>

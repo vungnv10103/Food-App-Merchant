@@ -161,7 +161,6 @@ public class MangerAccountFragment extends Fragment implements Constant, SwipeRe
                 if (event.getRawX() >= (edName.getRight() - edName.getCompoundDrawables()[2].getBounds().width())) {
                     // Handle the event on the drawableEnd here
                     edName.setText("");
-                    edName.setFocusable(false);
                     return true;
                 }
             }
@@ -172,7 +171,6 @@ public class MangerAccountFragment extends Fragment implements Constant, SwipeRe
                 if (event.getRawX() >= (edPhone.getRight() - edPhone.getCompoundDrawables()[2].getBounds().width())) {
                     // Handle the event on the drawableEnd here
                     edPhone.setText("");
-                    edPhone.setFocusable(false);
                     return true;
                 }
             }
@@ -183,7 +181,7 @@ public class MangerAccountFragment extends Fragment implements Constant, SwipeRe
                 if (event.getRawX() >= (edEmail.getRight() - edEmail.getCompoundDrawables()[2].getBounds().width())) {
                     // Handle the event on the drawableEnd here
                     edEmail.setText("");
-                    edEmail.setFocusable(false);
+
                     return true;
                 }
             }

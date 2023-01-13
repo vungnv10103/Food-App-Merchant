@@ -1,6 +1,7 @@
 package vungnv.com.foodappmerchant;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
@@ -30,7 +31,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.HashMap;
 import java.util.List;
 
 import vungnv.com.foodappmerchant.constant.Constant;
@@ -201,30 +206,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         notificationManager.notify(0, builder.build());
     }
 
-    private void getData() {
-        int temp = 0;
-//        Toast.makeText(this, ""+ listProduct.size(), Toast.LENGTH_SHORT).show();
-
-//        FirebaseDatabase database = FirebaseDatabase.getInstance();
-//        DatabaseReference reference = database.getReference("my_path");
-//        reference.setValue(listCate, new DatabaseReference.CompletionListener() {
-//            @Override
-//            public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
-//                Toast.makeText(getApplicationContext(), "Thàng công", Toast.LENGTH_SHORT).show();
-//            }
-//        });
 
 
-    }
-
-
-    @Override
-    public void onBackPressed() {
-        if (drawerLayout.isDrawerOpen(navigationView)) {
-            drawerLayout.closeDrawer(navigationView);
-        } else {
-            super.onBackPressed();
+        @Override
+        public void onBackPressed() {
+            if (drawerLayout.isDrawerOpen(navigationView)) {
+                drawerLayout.closeDrawer(navigationView);
+            } else {
+                super.onBackPressed();
+            }
         }
-    }
 
 }

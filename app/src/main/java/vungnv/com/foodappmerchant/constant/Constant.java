@@ -4,6 +4,7 @@ public interface Constant {
    String UPDATE_DATA = "Tải mới thành công !!";
    String NOTIFICATION = "FoodYum Merchant";
    String MESSAGE = "Chúc bạn ngày mới vui vẻ";
+   String CATEGORY_LIST = "danh sách thể loại";
    int REQUEST_CODE = 100;
    int SELECT_PICTURE = 10;
    String ORDER = "Đơn hàng";
@@ -15,6 +16,7 @@ public interface Constant {
    String DB_ProductSlideShow = "ProductSlideShow.db";
    String DB_DISHES = "Dishes.db";
    int DB_VERSION = 1;
+   int CAMERA_PIC_REQUEST = 100;
    String REQUEST_FILL = "Vui lòng điền đủ thông tin !!";
    String WRONG_PASS = "Mật khẩu cũ sai !!";
    String WRONG_PHONE_FORMAT = "Số điện thoại sai định dạng !!";
@@ -23,6 +25,8 @@ public interface Constant {
    String PASS_NO_MATCH = "Mật khẩu mới không khớp nhau !!";
    String CHANGE_PASS_SUCCESS = "Đổi mật khẩu thành công !!";
    String ERROR_FETCHING_DATE = "Lỗi lấy dữ liệu ";
+   String CHECK_CAM = "Thiết bị không có camera hoặc camera đã bị hỏng !!";
+   String ERROR_CAM = "Lỗi mở camera !!";
    String TAG = "log";
    String UPDATE_IMAGE = "Cập nhật ảnh thành công";
 

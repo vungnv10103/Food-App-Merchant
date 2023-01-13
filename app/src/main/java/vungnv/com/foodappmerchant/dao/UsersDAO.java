@@ -22,12 +22,14 @@ public class UsersDAO {
 
     public long insert(UserModel obj) {
         ContentValues values = new ContentValues();
+        values.put("id", obj.id);
+        values.put("status", obj.status);
         values.put("img", obj.img);
         values.put("name", obj.name);
         values.put("email", obj.email);
         values.put("pass", obj.pass);
         values.put("phoneNumber", obj.phoneNumber);
-        values.put("searchHistory", obj.searchHistory);
+        values.put("restaurantName", obj.restaurantName);
         values.put("address", obj.address);
         values.put("coordinates", obj.coordinates);
         values.put("feedback", obj.feedback);
@@ -72,17 +74,6 @@ public class UsersDAO {
         values.put("pass", obj.pass);
         return db.update("User", values, "email=?", new String[]{obj.email});
     }
-    public int updateSearchHistory(UserModel obj) {
-        ContentValues values = new ContentValues();
-        values.put("searchHistory", obj.searchHistory);
-        return db.update("User", values, "email=?", new String[]{obj.email});
-    }
-
-    public String getSearchHistory(String email) {
-        String sql = "SELECT * FROM User WHERE email=?";
-        List<UserModel> list = getData(sql, email);
-        return list.get(0).searchHistory;
-    }
     public String getNameUser(String email) {
         String sql = "SELECT * FROM User WHERE email=?";
         List<UserModel> list = getData(sql, email);
@@ -117,7 +108,7 @@ public class UsersDAO {
         }
        return "";
     }
-    public int getIDUser(String email) {
+    public String getIDUser(String email) {
         String sql = "SELECT * FROM User WHERE email=?";
         List<UserModel> list = getData(sql, email);
         return list.get(0).id;
@@ -150,14 +141,16 @@ public class UsersDAO {
         @SuppressLint("Recycle") Cursor cursor = db.rawQuery(sql, selectionArgs);
         while (cursor.moveToNext()) {
             UserModel obj = new UserModel();
-            obj.id = Integer.parseInt(cursor.getString(cursor.getColumnIndex("id")));
+            obj.stt = Integer.parseInt(cursor.getString(cursor.getColumnIndex("stt")));
+            obj.id = cursor.getString(cursor.getColumnIndex("id"));
+            obj.status = Integer.parseInt(cursor.getString(cursor.getColumnIndex("status")));
             obj.img = cursor.getString(cursor.getColumnIndex("img"));
             obj.name = cursor.getString(cursor.getColumnIndex("name"));
             obj.email = cursor.getString(cursor.getColumnIndex("email"));
             obj.pass = cursor.getString(cursor.getColumnIndex("pass"));
             obj.phoneNumber = cursor.getString(cursor.getColumnIndex("phoneNumber"));
+            obj.restaurantName = cursor.getString(cursor.getColumnIndex("restaurantName"));
             obj.address = cursor.getString(cursor.getColumnIndex("address"));
-            obj.searchHistory = cursor.getString(cursor.getColumnIndex("searchHistory"));
             obj.coordinates = cursor.getString(cursor.getColumnIndex("coordinates"));
             obj.feedback = cursor.getString(cursor.getColumnIndex("feedback"));
 

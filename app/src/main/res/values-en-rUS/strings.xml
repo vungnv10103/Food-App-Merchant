@@ -41,4 +41,19 @@
     <string name="default_phone_number">0987654123</string>
     <string name="default_email">foodapp@gmail.com</string>
     <string name="logout">Log out</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="pass_old">Old password</string>
+    <string name="pass_new">New password</string>
+    <string name="pass_confirm">Confirm password</string>
+    <string name="full_name">FullName</string>
+    <string name="change_information">Change personal information</string>
+    <string name="category">Category</string>
+    <string name="default_desc">Descriptione</string>
+    <string name="price">Price</string>
+    <string name="product_name">Product`s name</string>
+    <string name="add_product">More new products</string>
+    <string name="waiting_time">Waiting time</string>
+    <string name="choose_a_photo">Choose_a_photo</string>
+    <string name="open_camera">Open camera</string>
 </resources>
