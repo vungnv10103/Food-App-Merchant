@@ -1,5 +1,7 @@
 package vungnv.com.foodappmerchant.model;
 
+import java.util.HashMap;
+
 public class UserModel {
     public int stt;
     public String id;
@@ -15,8 +17,7 @@ public class UserModel {
     public String feedback;
 
 
-    public UserModel(int stt, String id, int status, String img, String name, String email, String pass, String phoneNumber, String restaurantName, String coordinates, String address, String feedback) {
-        this.stt = stt;
+    public UserModel( String id, int status, String img, String name, String email, String pass, String phoneNumber, String restaurantName, String coordinates, String address, String feedback) {
         this.id = id;
         this.status = status;
         this.img = img;
@@ -31,5 +32,21 @@ public class UserModel {
     }
 
     public UserModel() {
+    }
+    public HashMap<String, Object> toMap() {
+        HashMap<String, Object> result = new HashMap<>();
+        result.put("id", id);
+        result.put("status", status);
+        result.put("img", img);
+        result.put("name", name);
+        result.put("email", email);
+        result.put("pass", pass);
+        result.put("phoneNumber", phoneNumber);
+        result.put("restaurantName", restaurantName);
+        result.put("coordinates", coordinates);
+        result.put("address", address);
+        result.put("feedback", feedback);
+
+        return result;
     }
 }

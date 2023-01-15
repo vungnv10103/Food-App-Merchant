@@ -233,8 +233,14 @@ public class AddProductActivity extends AppCompatActivity implements Constant {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         ImagePicker.onActivityResult(requestCode, resultCode, data);
+        if (data == null){
+            return;
+        }
         if (requestCode == CAMERA_PIC_REQUEST) {
             Bitmap bitmap = (Bitmap) data.getExtras().get("data");
+            if (bitmap == null){
+                return;
+            }
             Log.d(TAG, "bitmap resource: " + bitmap);
             imgProduct.setImageBitmap(bitmap);
             StorageReference storageRef = FirebaseStorage.getInstance().getReference();

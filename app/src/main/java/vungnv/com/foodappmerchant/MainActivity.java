@@ -1,7 +1,6 @@
 package vungnv.com.foodappmerchant;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
@@ -11,7 +10,6 @@ import androidx.core.app.NotificationManagerCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.annotation.SuppressLint;
 import android.app.NotificationChannel;
@@ -23,7 +21,6 @@ import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -31,21 +28,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
-import java.util.HashMap;
-import java.util.List;
-
+import vungnv.com.foodappmerchant.activities.AddCategoryActivity;
 import vungnv.com.foodappmerchant.constant.Constant;
-import vungnv.com.foodappmerchant.model.CategoryModel;
-import vungnv.com.foodappmerchant.model.ProductModel;
-import vungnv.com.foodappmerchant.model.ProductSlideShowModel;
-import vungnv.com.foodappmerchant.model.UserModel;
 import vungnv.com.foodappmerchant.ui.account.MangerAccountFragment;
 import vungnv.com.foodappmerchant.ui.home.OrderFragment;
-import vungnv.com.foodappmerchant.ui.infomation.InformationFragment;
+import vungnv.com.foodappmerchant.ui.information.InformationFragment;
 import vungnv.com.foodappmerchant.ui.manager_menu.ManageMenuActivity;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, Constant {
@@ -58,11 +46,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private TextView tvHome, tvManagerAccount;
     public static final String CHANNEL_ID = "my_channel_id";
 
-
-    private List<UserModel> listUser;
-    private List<ProductModel> listProduct;
-    private List<ProductSlideShowModel> listSlideShow;
-    private List<CategoryModel> listCate;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -136,7 +119,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int index = item.getItemId();
         switch (index) {
             case R.id.mail_box:
-                Toast.makeText(this, "Hộp thư", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(MainActivity.this, AddCategoryActivity.class));
+                finishAffinity();
                 break;
             case R.id.order_history:
                 Toast.makeText(this, "Lịch sử đơn hàng", Toast.LENGTH_SHORT).show();
@@ -207,14 +191,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
 
-
-        @Override
-        public void onBackPressed() {
-            if (drawerLayout.isDrawerOpen(navigationView)) {
-                drawerLayout.closeDrawer(navigationView);
-            } else {
-                super.onBackPressed();
-            }
+    @Override
+    public void onBackPressed() {
+        if (drawerLayout.isDrawerOpen(navigationView)) {
+            drawerLayout.closeDrawer(navigationView);
+        } else {
+            super.onBackPressed();
         }
+    }
 
 }

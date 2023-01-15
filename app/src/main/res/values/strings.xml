@@ -56,4 +56,6 @@
     <string name="waiting_time">Thời gian chờ</string>
     <string name="choose_a_photo">Chọn ảnh</string>
     <string name="open_camera">Mở camera</string>
+    <string name="restaurant_name">Tên nhà hàng/cửa hàng</string>
+    <string name="address">Địa chỉ</string>
 </resources>
