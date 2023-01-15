@@ -123,6 +123,9 @@ public class UsersDAO {
     public int delete(int id) {
         return db.delete("User", "id=?", new String[]{String.valueOf(id)});
     }
+    public void deleteTable() {
+        db.execSQL("delete from User");
+    }
 
 
     public List<UserModel> getALL() {

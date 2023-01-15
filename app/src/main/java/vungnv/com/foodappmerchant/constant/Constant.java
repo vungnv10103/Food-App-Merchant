@@ -22,6 +22,7 @@ public interface Constant {
    String WRONG_PHONE_FORMAT = "Số điện thoại sai định dạng !!";
    String WRONG_EMAIL_FORMAT = "Email sai định dạng !!";
    String REQUEST_FORM = "Yêu cầu của bạn đã được gửi\nĐợi phê duyệt !!";
+   String SYNC_SUCCESS = "Đồng bộ thành công !!";
    String PASS_NO_MATCH = "Mật khẩu mới không khớp nhau !!";
    String CHANGE_PASS_SUCCESS = "Đổi mật khẩu thành công !!";
    String ERROR_FETCHING_DATE = "Lỗi lấy dữ liệu ";
