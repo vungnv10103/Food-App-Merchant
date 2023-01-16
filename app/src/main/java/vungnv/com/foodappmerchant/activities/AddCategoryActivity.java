@@ -91,10 +91,7 @@ public class AddCategoryActivity extends AppCompatActivity implements Constant {
                                     onBackPressed();
                                 }
                             });
-
-
                         }
-
                     }
 
                     @Override

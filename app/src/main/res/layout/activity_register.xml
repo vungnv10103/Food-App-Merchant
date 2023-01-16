@@ -245,7 +245,6 @@
             android:layout_height="30dp"
             android:gravity="center"
             android:text="@string/sign_in"
-            android:layout_marginStart="5dp"
             android:textColor="#ff5353"
             android:textStyle="bold"
             />

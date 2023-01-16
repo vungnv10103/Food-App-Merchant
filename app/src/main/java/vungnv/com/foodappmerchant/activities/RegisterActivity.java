@@ -130,7 +130,7 @@ public class RegisterActivity extends AppCompatActivity implements Constant {
         btnRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("list_user_merchant");
+                DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("list_user_merchant_default");
                 ref.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -151,11 +151,13 @@ public class RegisterActivity extends AppCompatActivity implements Constant {
                                     DatabaseReference reference = database.getReference();
                                     Map<String, Object> updates = new HashMap<>();
                                     //Toast.makeText(RegisterActivity.this, ""+sizeData, Toast.LENGTH_SHORT).show();
-                                    updates.put("list_user_merchant/" + sizeData, mListUser);
+                                    updates.put("list_user_merchant_default/" + sizeData, mListUser);
                                     reference.updateChildren(updates, new DatabaseReference.CompletionListener() {
                                         @Override
                                         public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
-                                            Toast.makeText(RegisterActivity.this, "Upload success", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(RegisterActivity.this, REQUEST_FORM, Toast.LENGTH_SHORT).show();
+                                            startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
+                                            finishAffinity();
                                         }
                                     });
                                 }
@@ -251,19 +253,12 @@ public class RegisterActivity extends AppCompatActivity implements Constant {
                                     double currentLongitude = addresses.get(0).getLongitude();
                                     double currentLatitude = addresses.get(0).getLatitude();
                                     coordinates = currentLongitude + "-" + currentLatitude;
-
-
                                 } catch (IOException e) {
                                     e.printStackTrace();
                                 }
-
-
                             }
-
                         }
                     });
-
-
         } else {
 
             askPermission();

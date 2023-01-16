@@ -35,6 +35,8 @@ import vungnv.com.foodappmerchant.ui.account.MangerAccountFragment;
 import vungnv.com.foodappmerchant.ui.home.OrderFragment;
 import vungnv.com.foodappmerchant.ui.information.InformationFragment;
 import vungnv.com.foodappmerchant.ui.manager_menu.ManageMenuActivity;
+import vungnv.com.foodappmerchant.utils.NetworkChangeListener;
+import vungnv.com.foodappmerchant.utils.createNotificationChannel;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, Constant {
 
@@ -42,9 +44,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private Toolbar toolbar;
     private NavigationView navigationView;
     private ImageView imgBack;
-    private View mHeaderView;
     private TextView tvHome, tvManagerAccount;
-    public static final String CHANNEL_ID = "my_channel_id";
+    private final NetworkChangeListener networkChangeListener = new NetworkChangeListener();
+
+    createNotificationChannel notification = new createNotificationChannel();
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -54,8 +57,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setContentView(R.layout.activity_main);
 
         init();
-        // getData();
-
+        notification.createNotificationChannel(MainActivity.this);
+        //vungnv.com.foodappmerchant.utils.createNotification.mCreateNotification(MainActivity.this, "Tiêu đề", "Nội dung");
 
         toolbar.setTitle(ORDER);
         toolbar.setTitleTextColor(Color.WHITE);
@@ -67,8 +70,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 onBackPressed();
             }
         });
-        //createNotification(MainActivity.this, NOTIFICATION, MESSAGE);
-        createNotificationChannel(MainActivity.this);
 
 
         tvHome.setOnClickListener(new View.OnClickListener() {
@@ -107,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawerLayout = findViewById(R.id.drawer);
         toolbar = findViewById(R.id.toolBar);
         navigationView = findViewById(R.id.naviView);
-        mHeaderView = navigationView.getHeaderView(0);
+        View mHeaderView = navigationView.getHeaderView(0);
         imgBack = mHeaderView.findViewById(R.id.imgBack);
         tvManagerAccount = mHeaderView.findViewById(R.id.tvManagerAccount);
         tvHome = mHeaderView.findViewById(R.id.tvHome);
@@ -120,7 +121,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         switch (index) {
             case R.id.mail_box:
                 startActivity(new Intent(MainActivity.this, AddCategoryActivity.class));
-                finishAffinity();
                 break;
             case R.id.order_history:
                 Toast.makeText(this, "Lịch sử đơn hàng", Toast.LENGTH_SHORT).show();
@@ -152,44 +152,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private void createNotificationChannel(Context context) {
-        // NotificationChannel for Android 8.0 and higher
-        NotificationManager notificationManager =
-                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-
-        CharSequence channelName = "My Channel";
-        int importance = NotificationManager.IMPORTANCE_HIGH;
-        NotificationChannel notificationChannel = null;
-        notificationChannel = new NotificationChannel(CHANNEL_ID, channelName, importance);
-        notificationChannel.enableLights(true);
-        notificationChannel.setLightColor(Color.RED);
-        notificationChannel.enableVibration(true);
-        notificationChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
-        notificationManager.createNotificationChannel(notificationChannel);
-
-    }
-
-    @SuppressLint("UnspecifiedImmutableFlag")
-    private void createNotification(Context context, String title, String message) {
-        // Create an explicit intent for an Activity in your app
-        Intent intent = new Intent(context, MainActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
-
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
-                .setSmallIcon(R.drawable.food_app_merchant_icon)
-                .setContentTitle(title)
-                .setContentText(message)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setContentIntent(pendingIntent)
-                .setAutoCancel(true);
-
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
-        notificationManager.notify(0, builder.build());
-    }
-
 
     @Override
     public void onBackPressed() {

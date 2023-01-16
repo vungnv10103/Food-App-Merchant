@@ -7,7 +7,9 @@ public interface Constant {
    String CATEGORY_LIST = "danh sách thể loại";
    int REQUEST_CODE = 100;
    int SELECT_PICTURE = 10;
+   String CHANNEL_ID = "my_channel_id";
    String ORDER = "Đơn hàng";
+
    String Manager_Infor = "Thông tin người quản lý";
    String DB_USER = "User.db";
    String DB_Item_Cart = "ItemCart.db";
@@ -19,6 +21,7 @@ public interface Constant {
    int CAMERA_PIC_REQUEST = 100;
    String REQUEST_FILL = "Vui lòng điền đủ thông tin !!";
    String WRONG_PASS = "Mật khẩu cũ sai !!";
+   String ERROR_LOGIN = "Tài khoản hoặc mật khẩu không đúng !!";
    String WRONG_PHONE_FORMAT = "Số điện thoại sai định dạng !!";
    String WRONG_EMAIL_FORMAT = "Email sai định dạng !!";
    String REQUEST_FORM = "Yêu cầu của bạn đã được gửi\nĐợi phê duyệt !!";
