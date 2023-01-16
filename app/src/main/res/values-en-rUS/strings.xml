@@ -56,4 +56,6 @@
     <string name="waiting_time">Waiting time</string>
     <string name="choose_a_photo">Choose_a_photo</string>
     <string name="open_camera">Open camera</string>
+    <string name="restaurant_name">Name of restaurant/store</string>
+    <string name="address">Address</string>
 </resources>

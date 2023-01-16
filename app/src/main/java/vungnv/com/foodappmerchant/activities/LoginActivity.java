@@ -1,6 +1,7 @@
 package vungnv.com.foodappmerchant.activities;
 
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -20,6 +21,8 @@ import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -32,16 +35,27 @@ import android.widget.ToggleButton;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
 
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import dmax.dialog.SpotsDialog;
 import vungnv.com.foodappmerchant.MainActivity;
 import vungnv.com.foodappmerchant.R;
 import vungnv.com.foodappmerchant.constant.Constant;
+import vungnv.com.foodappmerchant.dao.UsersDAO;
+import vungnv.com.foodappmerchant.model.UserModel;
 import vungnv.com.foodappmerchant.utils.LocationProvider;
 import vungnv.com.foodappmerchant.utils.NetworkChangeListener;
 
@@ -54,9 +68,15 @@ public class LoginActivity extends AppCompatActivity implements Constant {
     private TextView tvRegister;
     private final NetworkChangeListener networkChangeListener = new NetworkChangeListener();
     private String mLocation = "";
+    private String coordinate = "";
     private FusedLocationProviderClient fusedLocationProviderClient;
+    private SpotsDialog progressDialog;
 //    double coNhueLongitude = 105.77553463;
 //    double coNhueLatitude = 21.06693654;
+
+    private UsersDAO usersDAO;
+    private ArrayList<UserModel> listDataUser;
+    ArrayAdapter<String> adapterItems;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +95,22 @@ public class LoginActivity extends AppCompatActivity implements Constant {
             edPass.setText(pref.getString("PASSWORD", ""));
             cbRemember.setChecked(pref.getBoolean("REMEMBER", false));
         }
+        listDataUser = (ArrayList<UserModel>) usersDAO.getALL();
+        String[] listUser = new String[listDataUser.size()];
+
+        for (int i = 0; i < listDataUser.size(); i++) {
+            String temp = listDataUser.get(i).email;
+            listUser[i] = temp;
+        }
+        adapterItems = new ArrayAdapter<String>(this, R.layout.list_item_acc, listUser);
+        edEmail.setAdapter(adapterItems);
+        edEmail.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String pass = usersDAO.autoFillPassWord(listUser[position]);
+                edPass.setText(pass);
+            }
+        });
 
         chkLanguage.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -98,12 +134,30 @@ public class LoginActivity extends AppCompatActivity implements Constant {
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                String email = edEmail.getText().toString().trim();
+                String pass = edPass.getText().toString().trim();
+                FirebaseAuth auth = FirebaseAuth.getInstance();
                 if (validate()) {
-                    String email = edEmail.getText().toString().trim();
-                    String pass = edPass.getText().toString().trim();
-                    rememberUser(email, pass, cbRemember.isChecked());
-                    startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                    finishAffinity();
+                    if (checkEmail(email)) {
+                        auth.signInWithEmailAndPassword(email, pass)
+                                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<AuthResult> task) {
+                                        if (task.isSuccessful()) {
+                                            progressDialog.dismiss();
+                                            rememberUser(email, pass, cbRemember.isChecked());
+                                            if (checkAccountExistInLocal(auth.getUid())) {
+                                                saveDbUserInLocal(auth.getUid(), email, pass);
+                                            }
+                                            startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                                            finishAffinity();
+                                        } else {
+                                            progressDialog.dismiss();
+                                            Toast.makeText(LoginActivity.this, ERROR_LOGIN + Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                });
+                    }
                 }
             }
         });
@@ -125,6 +179,8 @@ public class LoginActivity extends AppCompatActivity implements Constant {
         tvRegister = findViewById(R.id.tvRegister);
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         chkLanguage = findViewById(R.id.chkLanguage);
+        progressDialog = new SpotsDialog(LoginActivity.this, R.style.Custom);
+        usersDAO = new UsersDAO(getApplicationContext());
     }
 
     private boolean validate() {
@@ -136,6 +192,48 @@ public class LoginActivity extends AppCompatActivity implements Constant {
         }
         return true;
 
+    }
+
+    private boolean checkEmail(String email) {
+        String regex = "^[a-zA-Z0-9._%+-]+@merchant\\.com$";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(email);
+        if (!matcher.matches()) {
+            Toast.makeText(getApplicationContext(), WRONG_EMAIL_FORMAT, Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        return true;
+    }
+
+    private boolean checkAccountExistInLocal(String idUser) {
+        int temp = 0;
+        listDataUser = (ArrayList<UserModel>) usersDAO.getALL();
+        for (UserModel item : listDataUser) {
+            if (idUser.toLowerCase(Locale.ROOT).equals(item.id.toLowerCase(Locale.ROOT))) {
+                temp++;
+            }
+        }
+        return temp <= 0;
+    }
+
+    private void saveDbUserInLocal(String id, String email, String pass) {
+        getLastLocation();
+        UserModel itemUser = new UserModel();
+
+        itemUser.id = id;
+        itemUser.email = email;
+        itemUser.pass = pass;
+        itemUser.img = "";
+        itemUser.name = "";
+        itemUser.phoneNumber = "";
+        itemUser.status = 1;
+        itemUser.feedback = "";
+        itemUser.coordinates = coordinate;
+        itemUser.address = mLocation;
+
+        if (usersDAO.insert(itemUser) > 0) {
+            Log.d(TAG, "save db user success: ");
+        }
     }
 
     private void askPermission() {
@@ -202,18 +300,13 @@ public class LoginActivity extends AppCompatActivity implements Constant {
                                 List<Address> addresses = null;
                                 try {
                                     addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-//                                    edLocation.setText("" + addresses.get(0).getAddressLine(0));
                                     mLocation = addresses.get(0).getAddressLine(0);
-                                    float[] results = new float[1];
                                     Log.d(TAG, "current Location: " + mLocation);
                                     double currentLongitude = addresses.get(0).getLongitude();
                                     double currentLatitude = addresses.get(0).getLatitude();
-                                    double coNhueLongitude = 105.77553463;
-                                    double coNhueLatitude = 21.06693654;
-                                    Log.d(TAG, "currentLongitude: " + currentLongitude + " currentLatitude: " + currentLatitude);
-                                    Location.distanceBetween(currentLatitude, currentLongitude, coNhueLatitude, coNhueLongitude, results);
-                                    float distanceInMeters = results[0];
-                                    Log.d(TAG, "distance: " + String.format("%.1f", distanceInMeters / 1000) + "km");
+
+                                    coordinate = currentLongitude + "-" + currentLatitude;
+
 
                                 } catch (IOException e) {
                                     e.printStackTrace();
