@@ -30,6 +30,10 @@ android {
 }
 
 dependencies {
+
+    // expandableTextView
+    implementation 'com.ms-square:expandableTextView:0.1.4'
+
     // custom progress dialog
     implementation 'com.github.d-max:spots-dialog:0.7@aar'
     // get current location
@@ -37,12 +41,14 @@ dependencies {
     // Swipe refresh layout
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
 
-    // Glide
-    implementation 'com.github.bumptech.glide:glide:4.14.2'
+    // firebase
     implementation 'com.google.firebase:firebase-messaging:23.1.1'
     implementation 'com.google.firebase:firebase-database:20.1.0'
     implementation 'com.google.firebase:firebase-storage:20.1.0'
     implementation 'com.google.firebase:firebase-auth:21.1.0'
+
+    // Glide
+    implementation 'com.github.bumptech.glide:glide:4.14.2'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.14.2'
     // Circle Imageview
     implementation 'de.hdodenhof:circleimageview:3.1.0'

@@ -58,4 +58,9 @@
     <string name="open_camera">Open camera</string>
     <string name="restaurant_name">Name of restaurant/store</string>
     <string name="address">Address</string>
+    <string name="food_management">Quản lý món ăn</string>
+    <string name="default_name_restaurant">Com Viett - Co Nhue 2</string>
+    <string name="default_rate">4.8</string>
+    <string name="default_quantity_sold">(100+)</string>
+    <string name="default_distance">0.5km</string>
 </resources>

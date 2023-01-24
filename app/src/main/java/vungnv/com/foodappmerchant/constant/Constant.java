@@ -12,10 +12,11 @@ public interface Constant {
 
    String Manager_Infor = "Thông tin người quản lý";
    String DB_USER = "User.db";
-   String DB_Item_Cart = "ItemCart.db";
-   String DB_Cate = "Categories.db";
-   String DB_Product = "Product.db";
-   String DB_ProductSlideShow = "ProductSlideShow.db";
+   String DB_ITEM_CART = "ItemCart.db";
+   String DB_CATE = "Categories.db";
+   String DB_STATUS_PRODUCT = "StatusProduct.db";
+   String DB_PRODUCT = "Product.db";
+   String DB_PRODUCT_SLIDE_SHOW = "ProductSlideShow.db";
    String DB_DISHES = "Dishes.db";
    int DB_VERSION = 1;
    int CAMERA_PIC_REQUEST = 100;
@@ -23,9 +24,11 @@ public interface Constant {
    String WRONG_PASS = "Mật khẩu cũ sai !!";
    String ERROR_LOGIN = "Tài khoản hoặc mật khẩu không đúng !!";
    String WRONG_PHONE_FORMAT = "Số điện thoại sai định dạng !!";
+   String REGISTER_SUCCESS = "Đăng ký thành công !!";
    String WRONG_EMAIL_FORMAT = "Email sai định dạng !!";
    String REQUEST_FORM = "Yêu cầu của bạn đã được gửi\nĐợi phê duyệt !!";
    String SYNC_SUCCESS = "Đồng bộ thành công !!";
+   String NO_PRODUCT = "Hiện không có sản phẩm nào !!";
    String PASS_NO_MATCH = "Mật khẩu mới không khớp nhau !!";
    String CHANGE_PASS_SUCCESS = "Đổi mật khẩu thành công !!";
    String ERROR_FETCHING_DATE = "Lỗi lấy dữ liệu ";

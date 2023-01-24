@@ -13,6 +13,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.os.Handler;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -104,6 +105,7 @@ public class MangerAccountFragment extends Fragment implements Constant, SwipeRe
                 }
             });
             btnCancel.setOnClickListener(v12 -> dialog.dismiss());
+            DisplayMetrics displayMetrics = new DisplayMetrics();
             WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
             lp.copyFrom(dialog.getWindow().getAttributes());
             lp.width = WindowManager.LayoutParams.WRAP_CONTENT;

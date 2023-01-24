@@ -11,7 +11,7 @@ import vungnv.com.foodappmerchant.constant.Constant;
 public class DbCategories extends SQLiteOpenHelper implements Constant {
 
     public DbCategories(@Nullable Context context) {
-        super(context, DB_Cate, null, DB_VERSION);
+        super(context, DB_CATE, null, DB_VERSION);
     }
 
     @Override
