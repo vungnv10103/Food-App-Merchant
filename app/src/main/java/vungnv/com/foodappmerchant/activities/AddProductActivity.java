@@ -50,6 +50,7 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
 
+import dmax.dialog.SpotsDialog;
 import vungnv.com.foodappmerchant.R;
 import vungnv.com.foodappmerchant.constant.Constant;
 import vungnv.com.foodappmerchant.dao.ProductDAO;
@@ -77,6 +78,7 @@ public class AddProductActivity extends AppCompatActivity implements Constant {
     private UserModel userModel;
     private ArrayList<UserModel> aListUser;
 
+    private SpotsDialog progressDialog;
     private static final Set<String> usedSequences = new HashSet<>();
 
 
@@ -137,6 +139,8 @@ public class AddProductActivity extends AppCompatActivity implements Constant {
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                progressDialog.show();
+                progressDialog.setCancelable(false);
                 // save data
 
                 String name = edName.getText().toString().trim();
@@ -147,7 +151,7 @@ public class AddProductActivity extends AppCompatActivity implements Constant {
 
                 FirebaseAuth auth = FirebaseAuth.getInstance();
                 getCoordinate(auth.getUid());
-                upLoadProduct(auth.getUid(), cate, fileName, name, desc, time, price, 0.0, 0, 2, coordinates, "", 0, 0);
+                upLoadProduct(auth.getUid(), cate, fileName, name, desc, time, price, 0.0, 0, 0, 2, coordinates, "", 0, 0);
             }
         });
     }
@@ -164,6 +168,7 @@ public class AddProductActivity extends AppCompatActivity implements Constant {
         btnSave = findViewById(R.id.btnSave);
         tvCancel = findViewById(R.id.tvCancel);
         productDAO = new ProductDAO(getApplicationContext());
+        progressDialog = new SpotsDialog(AddProductActivity.this, R.style.Custom);
     }
 
     private boolean validate() {
@@ -245,6 +250,7 @@ public class AddProductActivity extends AppCompatActivity implements Constant {
             }
         });
     }
+
     private void getCoordinate(String idUser) {
         aListUser = new ArrayList<>();
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
@@ -263,7 +269,8 @@ public class AddProductActivity extends AppCompatActivity implements Constant {
             }
         });
     }
-    private void clearForm(){
+
+    private void clearForm() {
         imgProduct.setImageResource(R.drawable.default_thumbnail);
         edName.setText("");
         edCate.setText("");
@@ -272,35 +279,25 @@ public class AddProductActivity extends AppCompatActivity implements Constant {
         edDesc.setText("");
     }
 
+
     private void upLoadProduct(String idUser, String type, String img, String name, String description,
-                               String timeDelay, double price, double rate, int favourite, int status,
+                               String timeDelay, double price, double rate, int favourite, int check, int status,
                                String coordinate, String feedBack, int quantity_sold, int quantityTotal) {
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("list_product/" + idUser);
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                long childCount = dataSnapshot.getChildrenCount();
-                ProductModel user = new ProductModel(idUser, type, img, name, description, timeDelay, price,
-                        rate, favourite, status, coordinate, feedBack, quantity_sold, quantityTotal);
-                Map<String, Object> mListProduct = user.toMap();
-                FirebaseDatabase database = FirebaseDatabase.getInstance();
-                DatabaseReference reference = database.getReference();
-                Map<String, Object> updates = new HashMap<>();
-                updates.put("list_product/" + idUser + "/" + childCount, mListProduct);
-                reference.updateChildren(updates, new DatabaseReference.CompletionListener() {
-                    @Override
-                    public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
-                        Toast.makeText(AddProductActivity.this, REGISTER_SUCCESS, Toast.LENGTH_SHORT).show();
-                        clearForm();
-                        Log.d(TAG, "upload product to firebase success ");
-                    }
-                });
 
-            }
+        ProductModel user = new ProductModel(idUser, type, img, name, description, timeDelay, price,
+                rate, favourite, check, status, coordinate, feedBack, quantity_sold, quantityTotal);
+        Map<String, Object> mListProduct = user.toMap();
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference reference = database.getReference();
+        Map<String, Object> updates = new HashMap<>();
 
+        updates.put("list_product_not_active/" + idUser + "/" + name, mListProduct);
+        reference.updateChildren(updates, new DatabaseReference.CompletionListener() {
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                // Handle error
+            public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
+                Toast.makeText(AddProductActivity.this, REQUEST_FORM, Toast.LENGTH_SHORT).show();
+                progressDialog.dismiss();
+                clearForm();
             }
         });
 
@@ -392,7 +389,6 @@ public class AddProductActivity extends AppCompatActivity implements Constant {
             }
         });
     }
-
 
 
     @Override

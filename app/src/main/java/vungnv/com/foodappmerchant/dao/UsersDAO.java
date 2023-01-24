@@ -114,19 +114,11 @@ public class UsersDAO {
         return list.get(0).id;
     }
 
-    public String getCurrentPass(String email) {
-        String sql = "SELECT * FROM User WHERE email=?";
-        List<UserModel> list = getData(sql, email);
+    public String getCurrentPass(String idUser) {
+        String sql = "SELECT * FROM User WHERE id=?";
+        List<UserModel> list = getData(sql, idUser);
         return list.get(0).pass;
     }
-
-    public int delete(int id) {
-        return db.delete("User", "id=?", new String[]{String.valueOf(id)});
-    }
-    public void deleteTable() {
-        db.execSQL("delete from User");
-    }
-
 
     public List<UserModel> getALL() {
         String sql = "SELECT * FROM User";
@@ -164,10 +156,10 @@ public class UsersDAO {
 
     }
     // check login in sqlite
-    public boolean checkAccountExist(String email){
-        String sql = "SELECT * FROM User WHERE email=?";
-        List<UserModel> list = getData(sql,email);
-        return list.size() != 0;
+    public boolean checkAccountExist(String idUser){
+        String sql = "SELECT * FROM User WHERE id=?";
+        List<UserModel> list = getData(sql,idUser);
+        return list.size() <= 0;
 
     }
 }

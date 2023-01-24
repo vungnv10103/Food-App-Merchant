@@ -3,6 +3,7 @@
     <string name="mail_box">Hộp thư</string>
     <string name="order_history">Lịch sử đặt hàng</string>
     <string name="order_complaint">Đơn hàng khiếu nại</string>
+    <string name="order">Đơn hàng</string>
     <string name="restaurant_manager">Quản lý nhà hàng</string>
     <string name="menu_manager">Quản lý menu</string>
     <string name="statistical">Thống kê</string>
@@ -64,4 +65,9 @@
     <string name="default_quantity_sold">(100+)</string>
     <string name="default_distance">0.5km</string>
     <string name="name_product">Tên món</string>
+    <string name="vnd">VNĐ</string>
+    <string name="available">Có sẵn</string>
+    <string name="temp_out_stock">Tạm hết hàng</string>
+    <string name="not_available">Không có sẵn (ẩn trên app)</string>
+    <string name="please_wait">Xin chờ</string>
 </resources>
