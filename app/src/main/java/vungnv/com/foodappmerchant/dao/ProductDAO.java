@@ -27,12 +27,11 @@ public class ProductDAO {
         values.put("img", obj.img);
         values.put("name", obj.name);
         values.put("favourite", obj.favourite);
-        values.put("mCheck", obj.mCheck);
+        values.put("status", obj.status);
         values.put("description", obj.description);
         values.put("timeDelay", obj.timeDelay);
         values.put("price", obj.price);
         values.put("rate", obj.rate);
-        values.put("calo", obj.calo);
         values.put("quantityTotal", obj.quantityTotal);
         values.put("quantity_sold", obj.quantity_sold);
         values.put("address", obj.address);
@@ -67,16 +66,15 @@ public class ProductDAO {
         @SuppressLint("Recycle") Cursor cursor = db.rawQuery(sql, selectionArgs);
         while (cursor.moveToNext()) {
             ProductModel obj = new ProductModel();
-            obj.id = Integer.parseInt(cursor.getString(cursor.getColumnIndex("id")));
-            obj.idUser = Integer.parseInt(cursor.getString(cursor.getColumnIndex("idUser")));
+            obj.stt = Integer.parseInt(cursor.getString(cursor.getColumnIndex("stt")));
+            obj.idUser = cursor.getString(cursor.getColumnIndex("idUser"));
             obj.type = cursor.getString(cursor.getColumnIndex("type"));
             obj.img = cursor.getString(cursor.getColumnIndex("img"));
             obj.name = cursor.getString(cursor.getColumnIndex("name"));
             obj.favourite = Integer.parseInt(cursor.getString(cursor.getColumnIndex("favourite")));
-            obj.mCheck = Integer.parseInt(cursor.getString(cursor.getColumnIndex("mCheck")));
+            obj.status = Integer.parseInt(cursor.getString(cursor.getColumnIndex("status")));
             obj.timeDelay = cursor.getString(cursor.getColumnIndex("timeDelay"));
             obj.description = cursor.getString(cursor.getColumnIndex("description"));
-            obj.calo = Double.valueOf(cursor.getString(cursor.getColumnIndex("calo")));
             obj.rate = Double.valueOf(cursor.getString(cursor.getColumnIndex("rate")));
             obj.price = Double.valueOf(cursor.getString(cursor.getColumnIndex("price")));
             obj.quantity_sold = Integer.parseInt(cursor.getString(cursor.getColumnIndex("quantity_sold")));

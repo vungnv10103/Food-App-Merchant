@@ -57,6 +57,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import dmax.dialog.SpotsDialog;
 import vungnv.com.foodappmerchant.MainActivity;
 import vungnv.com.foodappmerchant.R;
 import vungnv.com.foodappmerchant.constant.Constant;
@@ -81,7 +82,7 @@ public class RegisterActivity extends AppCompatActivity implements Constant {
     private String fileName = "";
     private String mLocation = "";
     private String coordinates = "";
-    private long sizeData;
+    private SpotsDialog progressDialog;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private static final Set<String> usedSequences = new HashSet<>();
 
@@ -130,47 +131,34 @@ public class RegisterActivity extends AppCompatActivity implements Constant {
         btnRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("list_user_merchant_default");
-                ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                progressDialog.show();
+                progressDialog.setCancelable(false);
+                getLastLocation();
+                String name = edName.getText().toString().trim();
+                String nameRestaurant = edNameRestaurant.getText().toString().trim();
+                String email = edEmail.getText().toString().trim();
+                String phoneNumber = edPhone.getText().toString().trim();
+                String address = edAddress.getText().toString().trim();
+                Log.d(TAG, "result coordinate: " + coordinates);
+                UserModel userModel = new UserModel("", 0, fileName, name, email,
+                        "", phoneNumber, nameRestaurant, coordinates, address, "");
+                Map<String, Object> mListUser = userModel.toMap();
+                FirebaseDatabase database = FirebaseDatabase.getInstance();
+                DatabaseReference reference = database.getReference();
+                Map<String, Object> updates = new HashMap<>();
+                int index = email.indexOf("@");
+                String userName = email.substring(0, index);
+                updates.put("list_user_merchant_default/" + userName, mListUser);
+                reference.updateChildren(updates, new DatabaseReference.CompletionListener() {
                     @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        sizeData = dataSnapshot.getChildrenCount();
-                        String name = edName.getText().toString().trim();
-                        String nameRestaurant = edNameRestaurant.getText().toString().trim();
-                        String email = edEmail.getText().toString().trim();
-                        String phoneNumber = edPhone.getText().toString().trim();
-                        String address = edAddress.getText().toString().trim();
-                        if (validate()) {
-                            if (checkEmail(email)) {
-                                if (checkPhoneNumber(phoneNumber)) {
-                                    getLastLocation();
-                                    UserModel userModel = new UserModel("", 0, fileName, name, email,
-                                            "", phoneNumber, nameRestaurant, coordinates, address, "");
-                                    Map<String, Object> mListUser = userModel.toMap();
-                                    FirebaseDatabase database = FirebaseDatabase.getInstance();
-                                    DatabaseReference reference = database.getReference();
-                                    Map<String, Object> updates = new HashMap<>();
-                                    //Toast.makeText(RegisterActivity.this, ""+sizeData, Toast.LENGTH_SHORT).show();
-                                    updates.put("list_user_merchant_default/" + sizeData, mListUser);
-                                    reference.updateChildren(updates, new DatabaseReference.CompletionListener() {
-                                        @Override
-                                        public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
-                                            Toast.makeText(RegisterActivity.this, REQUEST_FORM, Toast.LENGTH_SHORT).show();
-                                            startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
-                                            finishAffinity();
-                                        }
-                                    });
-                                }
-                            }
-                        }
-
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                        // Handle error
+                    public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
+                        Toast.makeText(RegisterActivity.this, REQUEST_FORM, Toast.LENGTH_SHORT).show();
+                        progressDialog.dismiss();
+                        startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
+                        finishAffinity();
                     }
                 });
+
 
             }
         });
@@ -196,6 +184,7 @@ public class RegisterActivity extends AppCompatActivity implements Constant {
         btnOpenCam = findViewById(R.id.btnOpenCamera);
         btnRegister = findViewById(R.id.btnRegister);
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        progressDialog = new SpotsDialog(RegisterActivity.this, R.style.Custom);
     }
 
     private boolean validate() {

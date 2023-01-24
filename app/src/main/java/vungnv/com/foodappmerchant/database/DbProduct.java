@@ -11,24 +11,23 @@ import vungnv.com.foodappmerchant.constant.Constant;
 public class DbProduct extends SQLiteOpenHelper implements Constant {
 
     public DbProduct(@Nullable Context context) {
-        super(context, DB_Product, null, DB_VERSION);
+        super(context, DB_PRODUCT, null, DB_VERSION);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
 
         String createTableProduct = "create table Product(" +
-                "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "stt INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "idUser INTEGER REFERENCES User(id)," +
                 "type TEXT REFERENCES Category(name)," +
                 "img TEXT not null," +
                 "name TEXT not null," +
                 "favourite INTEGER not null," +
-                "mCheck INTEGER not null," +
+                "status INTEGER not null," +
                 "description TEXT not null," +
                 "timeDelay TEXT not null," +
                 "price REAL not null," +
-                "calo REAL not null," +
                 "rate REAL not null," +
                 "quantity_sold INTEGER not null," +
                 "address TEXT not null," +

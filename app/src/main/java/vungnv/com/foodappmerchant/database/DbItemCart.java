@@ -11,7 +11,7 @@ import vungnv.com.foodappmerchant.constant.Constant;
 public class DbItemCart extends SQLiteOpenHelper implements Constant {
 
     public DbItemCart(@Nullable Context context) {
-        super(context, DB_Item_Cart, null, DB_VERSION);
+        super(context, DB_ITEM_CART, null, DB_VERSION);
     }
 
     @Override

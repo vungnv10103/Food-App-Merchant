@@ -5,9 +5,6 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.os.Handler;
@@ -15,8 +12,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
@@ -32,16 +27,12 @@ import java.util.Map;
 
 import vungnv.com.foodappmerchant.R;
 import vungnv.com.foodappmerchant.constant.Constant;
-import vungnv.com.foodappmerchant.dao.DishesDAO;
 import vungnv.com.foodappmerchant.dao.UsersDAO;
-import vungnv.com.foodappmerchant.model.DishesModel;
 import vungnv.com.foodappmerchant.model.UserModel;
 
 public class OrderFragment extends Fragment implements Constant, SwipeRefreshLayout.OnRefreshListener {
     private SwipeRefreshLayout swipeRefreshLayout;
-    private DishesDAO dishesDAO;
-    private List<DishesModel> listDishes;
-    private DishesModel itemDishes;
+
 
     private UsersDAO usersDAO;
     private List<UserModel> listUser;
@@ -78,7 +69,6 @@ public class OrderFragment extends Fragment implements Constant, SwipeRefreshLay
     private void init(View view){
         swipeRefreshLayout = view.findViewById(R.id.swipe_refresh_list_home);
         swipeRefreshLayout.setOnRefreshListener(this);
-        dishesDAO = new DishesDAO(getContext());
         usersDAO = new UsersDAO(getContext());
     }
     private void syncData() {
@@ -131,58 +121,6 @@ public class OrderFragment extends Fragment implements Constant, SwipeRefreshLay
 
             }
         });
-    }
-
-    private void pushData() {
-        int temp = 0;
-        String name = "Cơm";
-        String img = "1000002637";
-
-        listDishes = dishesDAO.getALL();
-        listUser = usersDAO.getALL();
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference reference = database.getReference("list_user_merchant");
-        String key = reference.child("list_user_merchant").push().getKey();
-        reference.setValue(listUser, new DatabaseReference.CompletionListener() {
-            @Override
-            public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
-                Toast.makeText(getContext(), "Thàng công", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-    private void pushDataUserMerchant() {
-
-        itemUser = new UserModel();
-
-        itemUser.id = "";
-        itemUser.status = 0;
-        itemUser.img = "1000002633";
-        itemUser.name = "Nguyen van Vung 1";
-        itemUser.email = "vung1@gmail.com";
-        itemUser.pass = "";
-        itemUser.phoneNumber = "037654321";
-        itemUser.restaurantName = "Cơm quán 1";
-        itemUser.address = "Cổ nhuế 2, Ha Noi";
-        itemUser.coordinates = "105.77553463-21.06693654";
-        itemUser.feedback = "";
-        if (usersDAO.insert(itemUser) > 0){
-            Log.d(TAG, "insert data to db user_merchant success: ");
-        }
-
-//        String key = reference.child("list_demo").push().getKey();
-        listUser = usersDAO.getALL();
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference reference = database.getReference();
-        Map<String, Object> updates = new HashMap<>();
-        updates.put("list_user_merchant", listUser);
-        reference.updateChildren(updates, new DatabaseReference.CompletionListener() {
-            @Override
-            public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
-                Toast.makeText(getContext(), "success", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-
     }
 
     @Override

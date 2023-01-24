@@ -40,6 +40,11 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 
 import java.io.IOException;
@@ -84,7 +89,6 @@ public class LoginActivity extends AppCompatActivity implements Constant {
         setContentView(R.layout.activity_login);
 
         init();
-
         String currentLanguage = getResources().getConfiguration().locale.getLanguage();
         chkLanguage.setChecked(currentLanguage.equals("en"));
         getLastLocation1();
@@ -134,6 +138,8 @@ public class LoginActivity extends AppCompatActivity implements Constant {
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                progressDialog.show();
+                progressDialog.setCancelable(false);
                 String email = edEmail.getText().toString().trim();
                 String pass = edPass.getText().toString().trim();
                 FirebaseAuth auth = FirebaseAuth.getInstance();
@@ -144,16 +150,17 @@ public class LoginActivity extends AppCompatActivity implements Constant {
                                     @Override
                                     public void onComplete(@NonNull Task<AuthResult> task) {
                                         if (task.isSuccessful()) {
-                                            progressDialog.dismiss();
+
                                             rememberUser(email, pass, cbRemember.isChecked());
                                             if (checkAccountExistInLocal(auth.getUid())) {
-                                                saveDbUserInLocal(auth.getUid(), email, pass);
+                                                saveDbUserInLocal();
                                             }
+                                            progressDialog.dismiss();
                                             startActivity(new Intent(LoginActivity.this, MainActivity.class));
                                             finishAffinity();
                                         } else {
                                             progressDialog.dismiss();
-                                            Toast.makeText(LoginActivity.this, ERROR_LOGIN + Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(LoginActivity.this, ERROR_LOGIN + "\n"+ Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();
                                         }
                                     }
                                 });
@@ -216,25 +223,51 @@ public class LoginActivity extends AppCompatActivity implements Constant {
         return temp <= 0;
     }
 
-    private void saveDbUserInLocal(String id, String email, String pass) {
-        getLastLocation();
-        UserModel itemUser = new UserModel();
+    private void saveDbUserInLocal() {
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("list_user_merchant");
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    UserModel userModel = dataSnapshot.getValue(UserModel.class);
+                    assert userModel != null;
+                    if (userModel.email.equals(edEmail.getText().toString().trim())) {
+                        listDataUser.add(userModel);
+                    }
+                }
+                if (listDataUser.size() == 0) {
+                    return;
+                }
+                for (int i = 0; i < listDataUser.size(); i++) {
+                    UserModel itemUser = new UserModel();
+                    UserModel item = listDataUser.get(i);
+                    itemUser.id = item.id;
+                    itemUser.status = item.status;
+                    itemUser.img = item.img;
+                    itemUser.name = item.name;
+                    itemUser.email = item.email;
+                    itemUser.pass = item.pass;
+                    itemUser.phoneNumber = item.phoneNumber;
+                    itemUser.restaurantName = item.restaurantName;
+                    itemUser.address = item.address;
+                    itemUser.coordinates = item.coordinates;
+                    itemUser.feedback = item.feedback;
 
-        itemUser.id = id;
-        itemUser.email = email;
-        itemUser.pass = pass;
-        itemUser.img = "";
-        itemUser.name = "";
-        itemUser.phoneNumber = "";
-        itemUser.status = 1;
-        itemUser.feedback = "";
-        itemUser.coordinates = coordinate;
-        itemUser.address = mLocation;
+                    if (usersDAO.insert(itemUser) > 0) {
+                        Log.d(TAG, "save db user success: ");
+                    }
 
-        if (usersDAO.insert(itemUser) > 0) {
-            Log.d(TAG, "save db user success: ");
-        }
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
+
 
     private void askPermission() {
         ActivityCompat.requestPermissions(LoginActivity.this, new String[]
@@ -267,8 +300,6 @@ public class LoginActivity extends AppCompatActivity implements Constant {
                         List<Address> addresses = null;
                         try {
                             addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-
-//                                    edLocation.setText("" + addresses.get(0).getAddressLine(0));
                             mLocation = addresses.get(0).getAddressLine(0);
 
                         } catch (IOException e) {

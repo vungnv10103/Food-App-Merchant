@@ -164,9 +164,9 @@ public class UsersDAO {
 
     }
     // check login in sqlite
-    public boolean checkAccountExist(String email, String pass){
-        String sql = "SELECT * FROM User WHERE email=? AND pass=?";
-        List<UserModel> list = getData(sql,email,pass);
+    public boolean checkAccountExist(String email){
+        String sql = "SELECT * FROM User WHERE email=?";
+        List<UserModel> list = getData(sql,email);
         return list.size() != 0;
 
     }

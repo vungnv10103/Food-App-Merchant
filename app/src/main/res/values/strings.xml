@@ -58,4 +58,10 @@
     <string name="open_camera">Mở camera</string>
     <string name="restaurant_name">Tên nhà hàng/cửa hàng</string>
     <string name="address">Địa chỉ</string>
+    <string name="food_management">Quản lý món ăn</string>
+    <string name="default_name_restaurant">Cơm Việt - Cổ Nhuế 2</string>
+    <string name="default_rate">4.8</string>
+    <string name="default_quantity_sold">(100+)</string>
+    <string name="default_distance">0.5km</string>
+    <string name="name_product">Tên món</string>
 </resources>

@@ -1,5 +1,6 @@
 package vungnv.com.foodappmerchant.ui.manager_menu;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -19,14 +20,22 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 import java.util.ArrayList;
+import java.util.List;
 
 import vungnv.com.foodappmerchant.R;
 import vungnv.com.foodappmerchant.activities.AddProductActivity;
-import vungnv.com.foodappmerchant.adapters.ListOfDishesAdapter;
+import vungnv.com.foodappmerchant.adapters.ProductsAdapter;
 import vungnv.com.foodappmerchant.constant.Constant;
-import vungnv.com.foodappmerchant.dao.DishesDAO;
-import vungnv.com.foodappmerchant.model.DishesModel;
+import vungnv.com.foodappmerchant.dao.ProductDAO;
+import vungnv.com.foodappmerchant.model.ProductModel;
 
 public class ManageMenuActivity extends AppCompatActivity implements Constant, SwipeRefreshLayout.OnRefreshListener {
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -36,10 +45,11 @@ public class ManageMenuActivity extends AppCompatActivity implements Constant, S
     private EditText edSearch;
     private RecyclerView rcvListDishes;
 
-    private DishesDAO dishesDAO;
-    private ArrayList<DishesModel> listDishes;
-    private ListOfDishesAdapter listOfDishesAdapter;
-    private DishesModel itemDishes;
+    private ProductDAO productDAO;
+    private ProductsAdapter productsAdapter;
+    private List<ProductModel> listProduct;
+    private ArrayList<ProductModel> aListProduct = new ArrayList<>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,7 +72,7 @@ public class ManageMenuActivity extends AppCompatActivity implements Constant, S
             @Override
             public void onClick(View v) {
                 //
-               startActivity(new Intent(ManageMenuActivity.this, AddProductActivity.class));
+                startActivity(new Intent(ManageMenuActivity.this, AddProductActivity.class));
             }
         });
         edSearch.addTextChangedListener(new TextWatcher() {
@@ -91,10 +101,10 @@ public class ManageMenuActivity extends AppCompatActivity implements Constant, S
                 } else {
                     imgDelete.setVisibility(View.INVISIBLE);
                 }
-                if (listDishes.size() == 0){
+                if (aListProduct.size() == 0){
                     return;
                 }
-                listOfDishesAdapter.getFilter().filter(s.toString());
+                productsAdapter.getFilter().filter(s.toString());
             }
         });
         imgFilter.setOnClickListener(new View.OnClickListener() {
@@ -104,8 +114,8 @@ public class ManageMenuActivity extends AppCompatActivity implements Constant, S
                 Toast.makeText(ManageMenuActivity.this, "clicked", Toast.LENGTH_SHORT).show();
             }
         });
-       // insertDefault();
-        listDishes();
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        listProduct(auth.getUid());
     }
 
     private void init() {
@@ -117,26 +127,62 @@ public class ManageMenuActivity extends AppCompatActivity implements Constant, S
         imgFilter = findViewById(R.id.imgFilter);
         edSearch = findViewById(R.id.edSearchInMenu);
         rcvListDishes = findViewById(R.id.rcvListOfDishes);
-        dishesDAO = new DishesDAO(getApplicationContext());
+        productDAO = new ProductDAO(getApplicationContext());
 
     }
 
     private void insertDefault() {
-        itemDishes = new DishesModel();
-        itemDishes.name = "Phở";
-        if (dishesDAO.insert(itemDishes) > 0) {
-            Log.d(TAG, "insert data to db Dishes success: ");
-        }
+
     }
 
-    private void listDishes() {
+    private void listProduct(String idUser) {
+        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+        DatabaseReference databaseReference = firebaseDatabase.getReference("list_product/" + idUser);
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                aListProduct.clear();
+                for (DataSnapshot snapshot1 : snapshot.getChildren()) {
+                    ProductModel model = snapshot1.getValue(ProductModel.class);
+                    if (model == null) {
+                        return;
+                    }
+                    aListProduct.add(model);
+                }
 
-        listDishes = (ArrayList<DishesModel>) dishesDAO.getALL();
-        if (listDishes.size() == 0) {
+                if (aListProduct.size() == 0) {
+                    Toast.makeText(ManageMenuActivity.this, NO_PRODUCT, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                productsAdapter = new ProductsAdapter(ManageMenuActivity.this, aListProduct);
+                rcvListDishes.setAdapter(productsAdapter);
+                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(ManageMenuActivity.this, RecyclerView.VERTICAL, false);
+                rcvListDishes.setLayoutManager(linearLayoutManager);
+                DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(rcvListDishes.getContext(),
+                        linearLayoutManager.getOrientation());
+                rcvListDishes.addItemDecoration(dividerItemDecoration);
+                rcvListDishes.setHasFixedSize(true);
+                rcvListDishes.setNestedScrollingEnabled(false);
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+
+    }
+
+    private void listProductLocal() {
+        listProduct = productDAO.getALLDefault();
+        if (listProduct.size() == 0) {
+            Toast.makeText(this, "Hiện không có sản phẩm nào !!", Toast.LENGTH_SHORT).show();
             return;
         }
-        listOfDishesAdapter = new ListOfDishesAdapter(this, listDishes);
-        rcvListDishes.setAdapter(listOfDishesAdapter);
+        productsAdapter = new ProductsAdapter(this, listProduct);
+        rcvListDishes.setAdapter(productsAdapter);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
         rcvListDishes.setLayoutManager(linearLayoutManager);
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(rcvListDishes.getContext(),
@@ -154,7 +200,8 @@ public class ManageMenuActivity extends AppCompatActivity implements Constant, S
             @Override
             public void run() {
                 swipeRefreshLayout.setRefreshing(false);
-                listDishes();
+                FirebaseAuth auth = FirebaseAuth.getInstance();
+                listProduct(auth.getUid());
 
             }
         }, 1500);
