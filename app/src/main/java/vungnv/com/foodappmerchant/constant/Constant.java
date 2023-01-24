@@ -8,7 +8,8 @@ public interface Constant {
    int REQUEST_CODE = 100;
    int SELECT_PICTURE = 10;
    String CHANNEL_ID = "my_channel_id";
-   String ORDER = "Đơn hàng";
+   String ORDER_VI = "Đơn hàng";
+   String ORDER_EN = "Order";
 
    String Manager_Infor = "Thông tin người quản lý";
    String DB_USER = "User.db";
@@ -35,7 +36,9 @@ public interface Constant {
    String CHECK_CAM = "Thiết bị không có camera hoặc camera đã bị hỏng !!";
    String ERROR_CAM = "Lỗi mở camera !!";
    String TAG = "log";
-   String UPDATE_IMAGE = "Cập nhật ảnh thành công";
+   String UPDATE_IMAGE = "Cập nhật ảnh thành công !!";
+   String UPDATE_STATUS_SUCCESS = "Cập nhật trạng thái thành công !!";
+   String UPDATE_SUCCESS = "Cập nhật thành công !!";
 
 
 

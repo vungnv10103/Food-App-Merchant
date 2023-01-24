@@ -84,6 +84,7 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.viewHo
         ProductModel item = list.get(position);
         Intent intent = new Intent(context, ShowDetailItemProductActivity.class);
         Bundle bundle = new Bundle();
+        bundle.putInt("pos", position);
         bundle.putInt("status", item.status);
         bundle.putString("img", item.img);
         bundle.putString("name", item.name);

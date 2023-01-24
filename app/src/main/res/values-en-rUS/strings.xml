@@ -4,6 +4,7 @@
     <string name="mail_box">Mailbox</string>
     <string name="order_history">Order history</string>
     <string name="order_complaint">Complaint order</string>
+    <string name="order">Order</string>
     <string name="restaurant_manager">Restaurant manager</string>
     <string name="menu_manager">Manage menus</string>
     <string name="statistical">Statistical</string>
@@ -49,7 +50,7 @@
     <string name="full_name">FullName</string>
     <string name="change_information">Change personal information</string>
     <string name="category">Category</string>
-    <string name="default_desc">Descriptione</string>
+    <string name="default_desc">Description</string>
     <string name="price">Price</string>
     <string name="product_name">Product`s name</string>
     <string name="add_product">More new products</string>
@@ -58,9 +59,15 @@
     <string name="open_camera">Open camera</string>
     <string name="restaurant_name">Name of restaurant/store</string>
     <string name="address">Address</string>
-    <string name="food_management">Quản lý món ăn</string>
+    <string name="food_management">Food management</string>
     <string name="default_name_restaurant">Com Viett - Co Nhue 2</string>
     <string name="default_rate">4.8</string>
     <string name="default_quantity_sold">(100+)</string>
     <string name="default_distance">0.5km</string>
+    <string name="name_product">Food`s name</string>
+    <string name="vnd">VNĐ</string>
+    <string name="available">Available</string>
+    <string name="temp_out_stock">Temporarily out of stock</string>
+    <string name="not_available">Not available (hidden on app)</string>
+    <string name="please_wait">Please wait</string>
 </resources>

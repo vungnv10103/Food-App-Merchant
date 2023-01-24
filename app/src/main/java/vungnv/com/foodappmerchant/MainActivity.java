@@ -62,7 +62,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         notification.createNotificationChannel(MainActivity.this);
         //vungnv.com.foodappmerchant.utils.createNotification.mCreateNotification(MainActivity.this, "Tiêu đề", "Nội dung");
 
-        toolbar.setTitle(ORDER);
+        String currentLanguage = getResources().getConfiguration().locale.getLanguage();
+        if (currentLanguage.equals("vi")){
+            toolbar.setTitle(ORDER_VI);
+        }
+        else {
+            toolbar.setTitle(ORDER_EN);
+        }
+
+
         toolbar.setTitleTextColor(Color.WHITE);
 
 

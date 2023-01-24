@@ -152,15 +152,15 @@ public class LoginActivity extends AppCompatActivity implements Constant {
                                         if (task.isSuccessful()) {
 
                                             rememberUser(email, pass, cbRemember.isChecked());
-                                            if (checkAccountExistInLocal(auth.getUid())) {
-                                                saveDbUserInLocal();
+                                            if (usersDAO.checkAccountExist(auth.getUid())) {
+                                                saveDbUserInLocal(auth.getUid());
                                             }
                                             progressDialog.dismiss();
                                             startActivity(new Intent(LoginActivity.this, MainActivity.class));
                                             finishAffinity();
                                         } else {
                                             progressDialog.dismiss();
-                                            Toast.makeText(LoginActivity.this, ERROR_LOGIN + "\n"+ Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(LoginActivity.this, ERROR_LOGIN + "\n" + Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();
                                         }
                                     }
                                 });
@@ -212,52 +212,31 @@ public class LoginActivity extends AppCompatActivity implements Constant {
         return true;
     }
 
-    private boolean checkAccountExistInLocal(String idUser) {
-        int temp = 0;
-        listDataUser = (ArrayList<UserModel>) usersDAO.getALL();
-        for (UserModel item : listDataUser) {
-            if (idUser.toLowerCase(Locale.ROOT).equals(item.id.toLowerCase(Locale.ROOT))) {
-                temp++;
-            }
-        }
-        return temp <= 0;
-    }
 
-    private void saveDbUserInLocal() {
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("list_user_merchant");
+    private void saveDbUserInLocal(String idUser) {
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("list_user_merchant").child(idUser);
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                    UserModel userModel = dataSnapshot.getValue(UserModel.class);
-                    assert userModel != null;
-                    if (userModel.email.equals(edEmail.getText().toString().trim())) {
-                        listDataUser.add(userModel);
-                    }
-                }
-                if (listDataUser.size() == 0) {
-                    return;
-                }
-                for (int i = 0; i < listDataUser.size(); i++) {
-                    UserModel itemUser = new UserModel();
-                    UserModel item = listDataUser.get(i);
-                    itemUser.id = item.id;
-                    itemUser.status = item.status;
-                    itemUser.img = item.img;
-                    itemUser.name = item.name;
-                    itemUser.email = item.email;
-                    itemUser.pass = item.pass;
-                    itemUser.phoneNumber = item.phoneNumber;
-                    itemUser.restaurantName = item.restaurantName;
-                    itemUser.address = item.address;
-                    itemUser.coordinates = item.coordinates;
-                    itemUser.feedback = item.feedback;
+                UserModel item = snapshot.getValue(UserModel.class);
+                UserModel itemUser = new UserModel();
+                assert item != null;
+                itemUser.id = item.id;
+                itemUser.status = item.status;
+                itemUser.img = item.img;
+                itemUser.name = item.name;
+                itemUser.email = item.email;
+                itemUser.pass = item.pass;
+                itemUser.phoneNumber = item.phoneNumber;
+                itemUser.restaurantName = item.restaurantName;
+                itemUser.address = item.address;
+                itemUser.coordinates = item.coordinates;
+                itemUser.feedback = item.feedback;
 
-                    if (usersDAO.insert(itemUser) > 0) {
-                        Log.d(TAG, "save db user success: ");
-                    }
-
+                if (usersDAO.insert(itemUser) > 0) {
+                    Log.d(TAG, "save db user success: ");
                 }
+
 
             }
 

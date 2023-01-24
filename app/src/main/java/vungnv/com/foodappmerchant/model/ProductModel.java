@@ -13,6 +13,7 @@ public class ProductModel {
     public Double price;
     public Double rate;
     public int favourite;
+    public int check;
     public int status;
     public String address;
     public String feedBack;
@@ -24,7 +25,7 @@ public class ProductModel {
 
     public ProductModel(String idUser, String type, String img, String name,
                         String description, String timeDelay, Double price, Double rate,
-                        int favourite, int status, String address, String feedBack,
+                        int favourite, int check, int status, String address, String feedBack,
                         int quantity_sold, int quantityTotal) {
         this.idUser = idUser;
         this.type = type;
@@ -35,6 +36,7 @@ public class ProductModel {
         this.price = price;
         this.rate = rate;
         this.favourite = favourite;
+        this.check = check;
         this.status = status;
         this.address = address;
         this.feedBack = feedBack;
@@ -52,6 +54,7 @@ public class ProductModel {
         result.put("price", price);
         result.put("rate", rate);
         result.put("favourite", favourite);
+        result.put("check", check);
         result.put("status", status);
         result.put("address", address);
         result.put("feedBack", feedBack);

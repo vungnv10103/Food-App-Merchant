@@ -140,14 +140,17 @@ public class RegisterActivity extends AppCompatActivity implements Constant {
                 String phoneNumber = edPhone.getText().toString().trim();
                 String address = edAddress.getText().toString().trim();
                 Log.d(TAG, "result coordinate: " + coordinates);
+
                 UserModel userModel = new UserModel("", 0, fileName, name, email,
                         "", phoneNumber, nameRestaurant, coordinates, address, "");
                 Map<String, Object> mListUser = userModel.toMap();
                 FirebaseDatabase database = FirebaseDatabase.getInstance();
                 DatabaseReference reference = database.getReference();
                 Map<String, Object> updates = new HashMap<>();
+
                 int index = email.indexOf("@");
                 String userName = email.substring(0, index);
+
                 updates.put("list_user_merchant_default/" + userName, mListUser);
                 reference.updateChildren(updates, new DatabaseReference.CompletionListener() {
                     @Override

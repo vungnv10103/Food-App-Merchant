@@ -201,7 +201,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="000 VNĐ"
+                android:text="@string/vnd"
                 android:textSize="16sp"
                 android:paddingHorizontal="20dp"
                 android:layout_marginTop="4dp"

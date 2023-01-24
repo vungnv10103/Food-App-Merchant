@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
@@ -14,6 +15,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.os.Handler;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -26,14 +28,25 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import dmax.dialog.SpotsDialog;
 import vungnv.com.foodappmerchant.MainActivity;
 import vungnv.com.foodappmerchant.R;
 import vungnv.com.foodappmerchant.activities.LoginActivity;
 import vungnv.com.foodappmerchant.constant.Constant;
+import vungnv.com.foodappmerchant.dao.UsersDAO;
+import vungnv.com.foodappmerchant.model.ProductModel;
+import vungnv.com.foodappmerchant.model.UserModel;
 
 public class MangerAccountFragment extends Fragment implements Constant, SwipeRefreshLayout.OnRefreshListener {
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -44,6 +57,9 @@ public class MangerAccountFragment extends Fragment implements Constant, SwipeRe
     private EditText edOldPass, edNewPass, edConfirmPass;
     private EditText edName, edPhone, edEmail;
     private Button btnSave, btnCancel;
+
+    private SpotsDialog progressDialog;
+    private UsersDAO usersDAO;
 
     public MangerAccountFragment() {
 
@@ -67,13 +83,19 @@ public class MangerAccountFragment extends Fragment implements Constant, SwipeRe
         View view = inflater.inflate(R.layout.fragment_manger_account, container, false);
 
         init(view);
-
+        progressDialog.show();
         swipeRefreshLayout.setColorSchemeColors(
                 getResources().getColor(R.color.red),
                 getResources().getColor(R.color.green));
 
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        getDataUser(auth.getUid());
+
+
         changePassword.setOnClickListener(v -> {
             // change password
+            String currentPass = usersDAO.getCurrentPass(auth.getUid());
+            Log.d(TAG, "current pass: " + currentPass);
             Dialog dialog = new Dialog(getContext());
             dialog.setContentView(R.layout.dialog_change_password);
             dialog.setCancelable(false);
@@ -96,6 +118,7 @@ public class MangerAccountFragment extends Fragment implements Constant, SwipeRe
                             Toast.makeText(getContext(), PASS_NO_MATCH, Toast.LENGTH_SHORT).show();
                         } else {
                             // change pass
+
                             Toast.makeText(getContext(), CHANGE_PASS_SUCCESS, Toast.LENGTH_SHORT).show();
                             dialog.dismiss();
                         }
@@ -105,7 +128,6 @@ public class MangerAccountFragment extends Fragment implements Constant, SwipeRe
                 }
             });
             btnCancel.setOnClickListener(v12 -> dialog.dismiss());
-            DisplayMetrics displayMetrics = new DisplayMetrics();
             WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
             lp.copyFrom(dialog.getWindow().getAttributes());
             lp.width = WindowManager.LayoutParams.WRAP_CONTENT;
@@ -143,6 +165,9 @@ public class MangerAccountFragment extends Fragment implements Constant, SwipeRe
         tvPhone = view.findViewById(R.id.tvPhone);
         tvEmail = view.findViewById(R.id.tvEmail);
         logOut = view.findViewById(R.id.logOut);
+
+        progressDialog = new SpotsDialog(getContext(), R.style.Custom);
+        usersDAO = new UsersDAO(getContext());
     }
 
 
@@ -201,9 +226,7 @@ public class MangerAccountFragment extends Fragment implements Constant, SwipeRe
                 if (checkPhoneNumber(phoneNumber)) {
                     if (checkEmail(email)) {
                         Toast.makeText(getContext(), REQUEST_FORM, Toast.LENGTH_SHORT).show();
-                        tvName.setText(fullName);
-                        tvPhone.setText(phoneNumber);
-                        tvEmail.setText(email);
+
                         dialog.dismiss();
                     }
                 }
@@ -239,6 +262,34 @@ public class MangerAccountFragment extends Fragment implements Constant, SwipeRe
             return false;
         }
         return true;
+    }
+
+    private void getDataUser(String idUser) {
+        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+        DatabaseReference databaseReference = firebaseDatabase.getReference("list_user_merchant/" + idUser);
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                UserModel model = snapshot.getValue(UserModel.class);
+                assert model != null;
+                String name = model.name;
+                String phone = model.phoneNumber;
+                String email = model.email;
+
+                String userName = email.substring(0, email.indexOf("@"));
+                String personEmail = userName + "@gmail.com";
+
+                tvName.setText(name);
+                tvPhone.setText(phone);
+                tvEmail.setText(personEmail);
+
+                progressDialog.dismiss();
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 
     public void replaceFragment(Fragment fra) {
