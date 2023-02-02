@@ -12,7 +12,9 @@
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+
         <!-- Customize your theme here. -->
+        <item name="android:actionMenuTextColor">@color/white</item>
     </style>
 
     <style name="ToolBarStyle" parent="Theme.AppCompat.Light.NoActionBar">
@@ -23,4 +25,9 @@
         <item name="android:windowEnterAnimation">@anim/slide_in_bottom</item>
         <item name="android:windowExitAnimation">@anim/slide_out_bottom</item>
     </style>
+    <style name="NavigationViewSelectedItem" parent="Theme.MaterialComponents.Light.DarkActionBar">
+        <item name="colorPrimary">@color/gray</item>
+    </style>
+
+
 </resources>

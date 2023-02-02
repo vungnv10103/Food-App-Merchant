@@ -1,25 +1,28 @@
 package vungnv.com.foodappmerchant.ui.manager_menu;
 
+import android.content.Intent;
+import android.os.Bundle;
+
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import android.content.Intent;
-import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -29,7 +32,10 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
+import dmax.dialog.SpotsDialog;
+import vungnv.com.foodappmerchant.MainActivity;
 import vungnv.com.foodappmerchant.R;
 import vungnv.com.foodappmerchant.activities.AddProductActivity;
 import vungnv.com.foodappmerchant.adapters.ProductsAdapter;
@@ -37,10 +43,8 @@ import vungnv.com.foodappmerchant.constant.Constant;
 import vungnv.com.foodappmerchant.dao.ProductDAO;
 import vungnv.com.foodappmerchant.model.ProductModel;
 
-public class ManageMenuActivity extends AppCompatActivity implements Constant, SwipeRefreshLayout.OnRefreshListener {
+public class ManageMenuActivatedFragment extends Fragment implements Constant, SwipeRefreshLayout.OnRefreshListener {
     private SwipeRefreshLayout swipeRefreshLayout;
-    private Toolbar toolbar;
-    private TextView tvAdd;
     private ImageView imgDelete, imgFilter;
     private EditText edSearch;
     private RecyclerView rcvListDishes;
@@ -50,31 +54,33 @@ public class ManageMenuActivity extends AppCompatActivity implements Constant, S
     private List<ProductModel> listProduct;
     private ArrayList<ProductModel> aListProduct = new ArrayList<>();
 
+    private SpotsDialog progressDialog;
+
+
+    public ManageMenuActivatedFragment() {
+        // Required empty public constructor
+    }
+
+    public static ManageMenuActivatedFragment newInstance() {
+        return new ManageMenuActivatedFragment();
+    }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_manage_menu);
+    }
 
-        init();
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        Objects.requireNonNull(((MainActivity) requireActivity()).getSupportActionBar()).setTitle(MANAGE_MENUS);
+        View view = inflater.inflate(R.layout.fragment_manage_menu_activated, container, false);
 
-        toolbar.setNavigationIcon(R.drawable.ic_baseline_close_24);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onBackPressed();
-            }
-        });
+        init(view);
         swipeRefreshLayout.setColorSchemeColors(
                 getResources().getColor(R.color.red),
                 getResources().getColor(R.color.green));
-        tvAdd.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //
-                startActivity(new Intent(ManageMenuActivity.this, AddProductActivity.class));
-            }
-        });
         edSearch.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -101,7 +107,7 @@ public class ManageMenuActivity extends AppCompatActivity implements Constant, S
                 } else {
                     imgDelete.setVisibility(View.INVISIBLE);
                 }
-                if (aListProduct.size() == 0){
+                if (aListProduct.size() == 0) {
                     return;
                 }
                 productsAdapter.getFilter().filter(s.toString());
@@ -111,28 +117,30 @@ public class ManageMenuActivity extends AppCompatActivity implements Constant, S
             @Override
             public void onClick(View v) {
 
-                Toast.makeText(ManageMenuActivity.this, "clicked", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "clicked", Toast.LENGTH_SHORT).show();
             }
         });
         FirebaseAuth auth = FirebaseAuth.getInstance();
         listProduct(auth.getUid());
+        progressDialog.dismiss();
+        return view;
     }
 
-    private void init() {
-        swipeRefreshLayout = findViewById(R.id.swipe_refresh_list_product);
+    private void init(View view) {
+        swipeRefreshLayout = view.findViewById(R.id.swipe_refresh_list_product);
         swipeRefreshLayout.setOnRefreshListener(this);
-        toolbar = findViewById(R.id.toolBarManageMenu);
-        tvAdd = findViewById(R.id.tvAdd);
-        imgDelete = findViewById(R.id.imgDelete);
-        imgFilter = findViewById(R.id.imgFilter);
-        edSearch = findViewById(R.id.edSearchInMenu);
-        rcvListDishes = findViewById(R.id.rcvListOfDishes);
-        productDAO = new ProductDAO(getApplicationContext());
+        imgDelete = view.findViewById(R.id.imgDelete);
+        imgFilter = view.findViewById(R.id.imgFilter);
+        edSearch = view.findViewById(R.id.edSearchInMenu);
+        rcvListDishes = view.findViewById(R.id.rcvListProductActivated);
+        productDAO = new ProductDAO(getContext());
+
+        progressDialog = new SpotsDialog(getContext(), R.style.Custom);
 
     }
-
 
     private void listProduct(String idUser) {
+        progressDialog.show();
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         DatabaseReference databaseReference = firebaseDatabase.getReference("list_product/" + idUser);
         databaseReference.addValueEventListener(new ValueEventListener() {
@@ -144,16 +152,19 @@ public class ManageMenuActivity extends AppCompatActivity implements Constant, S
                     if (model == null) {
                         return;
                     }
-                    aListProduct.add(model);
+                    if (model.status == 2) {
+                        aListProduct.add(model);
+                    }
+
                 }
 
                 if (aListProduct.size() == 0) {
-                    Toast.makeText(ManageMenuActivity.this, NO_PRODUCT, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), NO_PRODUCT, Toast.LENGTH_SHORT).show();
                     return;
                 }
-                productsAdapter = new ProductsAdapter(ManageMenuActivity.this, aListProduct);
+                productsAdapter = new ProductsAdapter(getContext(), aListProduct);
                 rcvListDishes.setAdapter(productsAdapter);
-                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(ManageMenuActivity.this, RecyclerView.VERTICAL, false);
+                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
                 rcvListDishes.setLayoutManager(linearLayoutManager);
                 DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(rcvListDishes.getContext(),
                         linearLayoutManager.getOrientation());
@@ -172,24 +183,6 @@ public class ManageMenuActivity extends AppCompatActivity implements Constant, S
 
     }
 
-    private void listProductLocal() {
-        listProduct = productDAO.getALLDefault();
-        if (listProduct.size() == 0) {
-            Toast.makeText(this, "Hiện không có sản phẩm nào !!", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        productsAdapter = new ProductsAdapter(this, listProduct);
-        rcvListDishes.setAdapter(productsAdapter);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
-        rcvListDishes.setLayoutManager(linearLayoutManager);
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(rcvListDishes.getContext(),
-                linearLayoutManager.getOrientation());
-        rcvListDishes.addItemDecoration(dividerItemDecoration);
-        rcvListDishes.setHasFixedSize(true);
-        rcvListDishes.setNestedScrollingEnabled(false);
-
-    }
-
     @Override
     public void onRefresh() {
         Handler handler = new Handler();
@@ -199,6 +192,7 @@ public class ManageMenuActivity extends AppCompatActivity implements Constant, S
                 swipeRefreshLayout.setRefreshing(false);
                 FirebaseAuth auth = FirebaseAuth.getInstance();
                 listProduct(auth.getUid());
+                progressDialog.dismiss();
 
             }
         }, 1500);

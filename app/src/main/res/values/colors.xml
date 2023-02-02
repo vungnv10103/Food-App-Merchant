@@ -11,4 +11,6 @@
     <color name="blue_sky">#f5f7fb</color>
     <color name="green">#00FF00</color>
     <color name="red">#ff0000</color>
+    <color name="brown">#3c2b33</color>
+    <color name="dark_gray">#444444</color>
 </resources>
