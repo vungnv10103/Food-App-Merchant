@@ -1,37 +1,43 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@+id/mail_box"
+        android:checkable="true"
         android:icon="@drawable/email"
         android:title="@string/mail_box" />
     <item
         android:id="@+id/order_history"
+        android:checkable="true"
         android:icon="@drawable/order_history"
         android:title="@string/order_history" />
     <item
         android:id="@+id/order_complaint"
+        android:checkable="true"
         android:icon="@drawable/warning"
         android:title="@string/order_complaint" />
     <item
         android:id="@+id/restaurant_manager"
+        android:checkable="true"
         android:icon="@drawable/store"
         android:title="@string/restaurant_manager" />
+
     <item
         android:id="@+id/menu_manager"
+        android:checkable="true"
         android:icon="@drawable/restaurant"
         android:title="@string/menu_manager" />
     <item
         android:id="@+id/statistical"
+        android:checkable="true"
         android:icon="@drawable/bar_chart"
         android:title="@string/statistical" />
 
-    <item android:title="@string/app_information">
-        <menu>
-            <item
-                android:id="@+id/info"
-                android:icon="@drawable/info"
-                android:title="@string/default_version" />
-        </menu>
-    </item>
+    <item
+        android:id="@+id/info"
+        android:checkable="true"
+        android:icon="@drawable/info"
+        android:title="@string/app_information" />
+
 
 </menu>

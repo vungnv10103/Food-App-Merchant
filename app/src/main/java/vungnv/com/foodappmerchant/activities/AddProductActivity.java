@@ -53,7 +53,6 @@ import java.util.Set;
 import dmax.dialog.SpotsDialog;
 import vungnv.com.foodappmerchant.R;
 import vungnv.com.foodappmerchant.constant.Constant;
-import vungnv.com.foodappmerchant.dao.ProductDAO;
 import vungnv.com.foodappmerchant.model.CategoryModel;
 import vungnv.com.foodappmerchant.model.ProductModel;
 import vungnv.com.foodappmerchant.model.UserModel;
@@ -72,12 +71,6 @@ public class AddProductActivity extends AppCompatActivity implements Constant {
     private String fileName = "";
     private String coordinates = "";
 
-    private ProductModel itemProduct;
-    private ProductDAO productDAO;
-
-    private UserModel userModel;
-    private ArrayList<UserModel> aListUser;
-
     private SpotsDialog progressDialog;
     private static final Set<String> usedSequences = new HashSet<>();
 
@@ -90,7 +83,7 @@ public class AddProductActivity extends AppCompatActivity implements Constant {
         init();
 
         listCate();
-        // aListCate.size()
+
         FirebaseAuth auth = FirebaseAuth.getInstance();
         getCoordinate(auth.getUid());
         btnGallery.setOnClickListener(new View.OnClickListener() {
@@ -151,7 +144,7 @@ public class AddProductActivity extends AppCompatActivity implements Constant {
 
                 FirebaseAuth auth = FirebaseAuth.getInstance();
                 getCoordinate(auth.getUid());
-                upLoadProduct(auth.getUid(), cate, fileName, name, desc, time, price, 0.0, 0, 0, 2, coordinates, "", 0, 0);
+                upLoadProduct(auth.getUid(), cate, fileName, name, desc, time, price, coordinates);
             }
         });
     }
@@ -167,7 +160,6 @@ public class AddProductActivity extends AppCompatActivity implements Constant {
         edDesc = findViewById(R.id.edDesc);
         btnSave = findViewById(R.id.btnSave);
         tvCancel = findViewById(R.id.tvCancel);
-        productDAO = new ProductDAO(getApplicationContext());
         progressDialog = new SpotsDialog(AddProductActivity.this, R.style.Custom);
     }
 
@@ -252,7 +244,7 @@ public class AddProductActivity extends AppCompatActivity implements Constant {
     }
 
     private void getCoordinate(String idUser) {
-        aListUser = new ArrayList<>();
+        ArrayList<UserModel> aListUser = new ArrayList<>();
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         DatabaseReference databaseReference = firebaseDatabase.getReference("list_user_merchant/" + idUser + "/coordinates");
         databaseReference.addValueEventListener(new ValueEventListener() {
@@ -279,13 +271,12 @@ public class AddProductActivity extends AppCompatActivity implements Constant {
         edDesc.setText("");
     }
 
-
     private void upLoadProduct(String idUser, String type, String img, String name, String description,
-                               String timeDelay, double price, double rate, int favourite, int check, int status,
-                               String coordinate, String feedBack, int quantity_sold, int quantityTotal) {
+                               String timeDelay, double price,
+                               String coordinate) {
 
-        ProductModel user = new ProductModel(idUser, type, img, name, description, timeDelay, price,
-                rate, favourite, check, status, coordinate, feedBack, quantity_sold, quantityTotal);
+        ProductModel user = new ProductModel(idUser, type, img, name, description, timeDelay, price, 0.0,
+                0.0, 0, 0, -1, coordinate, "", 0, 0);
         Map<String, Object> mListProduct = user.toMap();
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference reference = database.getReference();
@@ -373,23 +364,6 @@ public class AddProductActivity extends AppCompatActivity implements Constant {
 
         }
     }
-
-    private void getPos(String idUser) {
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("list_user_merchant/" + idUser);
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                long childCount = dataSnapshot.getChildrenCount();
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                // Handle error
-            }
-        });
-    }
-
 
     @Override
     protected void onStart() {

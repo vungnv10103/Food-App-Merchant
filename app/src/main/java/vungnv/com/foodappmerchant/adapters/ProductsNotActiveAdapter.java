@@ -26,14 +26,14 @@ import vungnv.com.foodappmerchant.model.ProductModel;
 import vungnv.com.foodappmerchant.ui.manager_menu.ShowDetailItemProductActivity;
 
 
-public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.viewHolder> implements Constant, Filterable {
+public class ProductsNotActiveAdapter extends RecyclerView.Adapter<ProductsNotActiveAdapter.viewHolder> implements Constant, Filterable {
     private final Context context;
     private static List<ProductModel> list;
     private final List<ProductModel> listOld;
 
-    public ProductsAdapter(Context context, List<ProductModel> list) {
+    public ProductsNotActiveAdapter(Context context, List<ProductModel> list) {
         this.context = context;
-        ProductsAdapter.list = list;
+        ProductsNotActiveAdapter.list = list;
         this.listOld = list;
     }
 
@@ -95,7 +95,6 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.viewHo
         bundle.putString("time", item.timeDelay);
         bundle.putString("desc", item.description);
         intent.putExtra("data-type", bundle);
-
 
         context.startActivity(intent);
     }

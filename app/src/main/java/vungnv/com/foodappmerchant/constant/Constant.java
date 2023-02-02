@@ -10,7 +10,7 @@ public interface Constant {
    String CHANNEL_ID = "my_channel_id";
    String ORDER_VI = "Đơn hàng";
    String ORDER_EN = "Order";
-
+   String MANAGE_MENUS = "Quản lý menu";
    String Manager_Infor = "Thông tin người quản lý";
    String DB_USER = "User.db";
    String DB_ITEM_CART = "ItemCart.db";
@@ -29,6 +29,7 @@ public interface Constant {
    String WRONG_EMAIL_FORMAT = "Email sai định dạng !!";
    String REQUEST_FORM = "Yêu cầu của bạn đã được gửi\nĐợi phê duyệt !!";
    String SYNC_SUCCESS = "Đồng bộ thành công !!";
+   String PRODUCT_NOT_ACTIVATED = "Sản phẩm chưa được kích hoạt !!";
    String NO_PRODUCT = "Hiện không có sản phẩm nào !!";
    String PASS_NO_MATCH = "Mật khẩu mới không khớp nhau !!";
    String CHANGE_PASS_SUCCESS = "Đổi mật khẩu thành công !!";

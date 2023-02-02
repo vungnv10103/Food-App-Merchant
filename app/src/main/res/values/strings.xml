@@ -70,4 +70,8 @@
     <string name="temp_out_stock">Tạm hết hàng</string>
     <string name="not_available">Không có sẵn (ẩn trên app)</string>
     <string name="please_wait">Xin chờ</string>
+    <string name="deleted">Xoá</string>
+    <string name="confirm">Xác nhận</string>
+    <string name="confirm_delete">Bạn có chắc chắn muốn xoá?</string>
+    <string name="discount">Giảm giá</string>
 </resources>

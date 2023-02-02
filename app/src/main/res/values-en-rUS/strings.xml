@@ -70,4 +70,7 @@
     <string name="temp_out_stock">Temporarily out of stock</string>
     <string name="not_available">Not available (hidden on app)</string>
     <string name="please_wait">Please wait</string>
+    <string name="deleted">Delete</string>
+    <string name="confirm">Confirm</string>
+    <string name="confirm_delete">Are you sure you want to delete?</string>
 </resources>

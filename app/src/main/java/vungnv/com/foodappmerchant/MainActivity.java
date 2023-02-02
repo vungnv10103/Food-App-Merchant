@@ -23,6 +23,7 @@ import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -37,6 +38,7 @@ import vungnv.com.foodappmerchant.ui.account.MangerAccountFragment;
 import vungnv.com.foodappmerchant.ui.home.OrderFragment;
 import vungnv.com.foodappmerchant.ui.information.InformationFragment;
 import vungnv.com.foodappmerchant.ui.manager_menu.ManageMenuActivity;
+import vungnv.com.foodappmerchant.ui.manager_menu.ManageMenuFragment;
 import vungnv.com.foodappmerchant.utils.NetworkChangeListener;
 import vungnv.com.foodappmerchant.utils.createNotificationChannel;
 
@@ -63,10 +65,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //vungnv.com.foodappmerchant.utils.createNotification.mCreateNotification(MainActivity.this, "Tiêu đề", "Nội dung");
 
         String currentLanguage = getResources().getConfiguration().locale.getLanguage();
-        if (currentLanguage.equals("vi")){
+        if (currentLanguage.equals("vi")) {
             toolbar.setTitle(ORDER_VI);
-        }
-        else {
+        } else {
             toolbar.setTitle(ORDER_EN);
         }
 
@@ -95,6 +96,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onClick(View v) {
                 replaceFragment(MangerAccountFragment.newInstance());
+                tvManagerAccount.setBackgroundColor(Color.DKGRAY);
                 drawerLayout.closeDrawer(navigationView);
             }
         });
@@ -106,6 +108,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.setItemIconTintList(ColorStateList.valueOf(Color.WHITE));
         navigationView.setNavigationItemSelectedListener(this);
         //replaceFragment(OrderFragment.newInstance());
+
         Fragment initialFragment = new OrderFragment();
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.frameLayout, initialFragment)
@@ -142,7 +145,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 Toast.makeText(this, "Quản lý nhà hàng", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.menu_manager:
-                startActivity(new Intent(MainActivity.this, ManageMenuActivity.class));
+                //startActivity(new Intent(MainActivity.this, ManageMenuActivity.class));
+                replaceFragment(ManageMenuFragment.newInstance());
                 break;
             case R.id.statistical:
                 Toast.makeText(this, "Thống kê", Toast.LENGTH_SHORT).show();
@@ -156,12 +160,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
+
     public void replaceFragment(Fragment fra) {
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.frameLayout, fra);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }
+
 
     @Override
     public void onBackPressed() {
@@ -171,6 +177,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             super.onBackPressed();
         }
     }
+
     @Override
     protected void onStart() {
         IntentFilter intentFilter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
