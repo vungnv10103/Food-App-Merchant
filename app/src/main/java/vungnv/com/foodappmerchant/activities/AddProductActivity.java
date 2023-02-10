@@ -144,7 +144,7 @@ public class AddProductActivity extends AppCompatActivity implements Constant {
 
                 FirebaseAuth auth = FirebaseAuth.getInstance();
                 getCoordinate(auth.getUid());
-                upLoadProduct(auth.getUid(), cate, fileName, name, desc, time, price, coordinates);
+                upLoadProduct("idProduct",auth.getUid(), cate, fileName, name, desc, time, price, coordinates);
             }
         });
     }
@@ -271,11 +271,11 @@ public class AddProductActivity extends AppCompatActivity implements Constant {
         edDesc.setText("");
     }
 
-    private void upLoadProduct(String idUser, String type, String img, String name, String description,
+    private void upLoadProduct(String id, String idUser, String type, String img, String name, String description,
                                String timeDelay, double price,
                                String coordinate) {
 
-        ProductModel user = new ProductModel(idUser, type, img, name, description, timeDelay, price, 0.0,
+        ProductModel user = new ProductModel(id, idUser, type, img, name, description, timeDelay, price, 0.0,
                 0.0, 0, 0, -1, coordinate, "", 0, 0);
         Map<String, Object> mListProduct = user.toMap();
         FirebaseDatabase database = FirebaseDatabase.getInstance();
