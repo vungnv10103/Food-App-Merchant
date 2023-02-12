@@ -17,6 +17,7 @@ public interface Constant {
    String DB_CATE = "Categories.db";
    String DB_STATUS_PRODUCT = "StatusProduct.db";
    String DB_PRODUCT = "Product.db";
+   String DB_ORDER = "Order.db";
    String DB_PRODUCT_SLIDE_SHOW = "ProductSlideShow.db";
    String DB_DISHES = "Dishes.db";
    int DB_VERSION = 1;

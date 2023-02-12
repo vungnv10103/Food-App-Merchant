@@ -36,13 +36,13 @@
             android:textSize="18sp" />
 
         <TextView
-            android:id="@+id/tvPrice"
+            android:id="@+id/tvWaitingTime"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="3"
             android:fontFamily="@font/roboto"
-            android:text="45.000đ"
-            android:textColor="@color/black"
+            android:text="10s"
+            android:textColor="@color/red"
             android:textSize="18sp" />
 
         <CheckBox
