@@ -3,11 +3,11 @@ package vungnv.com.foodappmerchant.model;
 import java.util.HashMap;
 
 public class Order {
-    public int stt;
     public String id;
     public String idUser;
     public String idMerchant;
     public String dateTime;
+    public int waitingTime;
     public String items;
     public int quantity;
     public int status;
@@ -17,7 +17,7 @@ public class Order {
     public Order() {
     }
 
-    public Order(String id, String idUser, String dateTime, String items, int quantity, int status, Double price, String notes) {
+    public Order(String id, String idUser, String dateTime, int waitingTime, String items, int quantity, int status, Double price, String notes) {
         this.id = id;
         this.idUser = idUser;
         this.dateTime = dateTime;

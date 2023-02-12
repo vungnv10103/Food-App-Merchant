@@ -30,7 +30,6 @@ import vungnv.com.foodappmerchant.model.Order;
 
 
 public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> implements Constant, Filterable {
-    private final Context context;
     private static List<Order> list;
     private final List<Order> listOld;
 
@@ -38,7 +37,6 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
     public OrderAdapter(Context context, List<Order> list) {
         OrderAdapter.list = list;
         this.listOld = list;
-        this.context = context;
     }
 
     @NonNull
@@ -54,7 +52,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
         Order item = list.get(position);
         holder.tvNameProduct.setText(item.items);
         holder.tvQuantity.setText(item.quantity+ "x");
-        holder.tvPrice.setText(item.price + "đ");
+        holder.tvWaitingTime.setText(item.waitingTime + "s");
 
 
     }
@@ -97,13 +95,13 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView tvQuantity, tvNameProduct, tvPrice;
+        TextView tvQuantity, tvNameProduct, tvWaitingTime;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             tvQuantity = itemView.findViewById(R.id.tvQuantity);
             tvNameProduct = itemView.findViewById(R.id.tvNameProduct);
-            tvPrice = itemView.findViewById(R.id.tvPrice);
+            tvWaitingTime = itemView.findViewById(R.id.tvWaitingTime);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
