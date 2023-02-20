@@ -13,7 +13,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -34,7 +33,6 @@ import vungnv.com.foodappmerchant.R;
 import vungnv.com.foodappmerchant.activities.AddProductActivity;
 import vungnv.com.foodappmerchant.adapters.ProductsAdapter;
 import vungnv.com.foodappmerchant.constant.Constant;
-import vungnv.com.foodappmerchant.dao.ProductDAO;
 import vungnv.com.foodappmerchant.model.ProductModel;
 
 public class ManageMenuActivity extends AppCompatActivity implements Constant, SwipeRefreshLayout.OnRefreshListener {
@@ -45,7 +43,6 @@ public class ManageMenuActivity extends AppCompatActivity implements Constant, S
     private EditText edSearch;
     private RecyclerView rcvListDishes;
 
-    private ProductDAO productDAO;
     private ProductsAdapter productsAdapter;
     private List<ProductModel> listProduct;
     private ArrayList<ProductModel> aListProduct = new ArrayList<>();
@@ -127,7 +124,6 @@ public class ManageMenuActivity extends AppCompatActivity implements Constant, S
         imgFilter = findViewById(R.id.imgFilter);
         edSearch = findViewById(R.id.edSearchInMenu);
         rcvListDishes = findViewById(R.id.rcvListOfDishes);
-        productDAO = new ProductDAO(getApplicationContext());
 
     }
 
@@ -172,23 +168,23 @@ public class ManageMenuActivity extends AppCompatActivity implements Constant, S
 
     }
 
-    private void listProductLocal() {
-        listProduct = productDAO.getALLDefault();
-        if (listProduct.size() == 0) {
-            Toast.makeText(this, "Hiện không có sản phẩm nào !!", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        productsAdapter = new ProductsAdapter(this, listProduct);
-        rcvListDishes.setAdapter(productsAdapter);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
-        rcvListDishes.setLayoutManager(linearLayoutManager);
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(rcvListDishes.getContext(),
-                linearLayoutManager.getOrientation());
-        rcvListDishes.addItemDecoration(dividerItemDecoration);
-        rcvListDishes.setHasFixedSize(true);
-        rcvListDishes.setNestedScrollingEnabled(false);
-
-    }
+//    private void listProductLocal() {
+//        listProduct = productDAO.getALLDefault();
+//        if (listProduct.size() == 0) {
+//            Toast.makeText(this, "Hiện không có sản phẩm nào !!", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+//        productsAdapter = new ProductsAdapter(this, listProduct);
+//        rcvListDishes.setAdapter(productsAdapter);
+//        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
+//        rcvListDishes.setLayoutManager(linearLayoutManager);
+//        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(rcvListDishes.getContext(),
+//                linearLayoutManager.getOrientation());
+//        rcvListDishes.addItemDecoration(dividerItemDecoration);
+//        rcvListDishes.setHasFixedSize(true);
+//        rcvListDishes.setNestedScrollingEnabled(false);
+//
+//    }
 
     @Override
     public void onRefresh() {

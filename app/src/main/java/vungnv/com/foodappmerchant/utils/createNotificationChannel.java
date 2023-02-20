@@ -7,6 +7,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.os.Build;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
 import vungnv.com.foodappmerchant.constant.Constant;
@@ -14,7 +15,7 @@ import vungnv.com.foodappmerchant.constant.Constant;
 
 public class createNotificationChannel implements Constant {
     @RequiresApi(api = Build.VERSION_CODES.N)
-    public void createNotificationChannel(Context context) {
+    public void mCreateNotificationChannel(@NonNull Context context) {
         // NotificationChannel for Android 8.0 and higher
         NotificationManager notificationManager =
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);

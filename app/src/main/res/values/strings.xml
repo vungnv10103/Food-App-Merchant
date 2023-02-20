@@ -74,4 +74,6 @@
     <string name="confirm">Xác nhận</string>
     <string name="confirm_delete">Bạn có chắc chắn muốn xoá?</string>
     <string name="discount">Giảm giá</string>
+    <string name="title_activity_maps">MapsActivity</string>
+    <string name="key_map">AIzaSyDOqvpzZHLSZxeeN0EEED41G-1nk5xNKEU</string>
 </resources>

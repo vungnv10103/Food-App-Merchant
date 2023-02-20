@@ -35,7 +35,9 @@ import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import vungnv.com.foodappmerchant.MainActivity;
 import vungnv.com.foodappmerchant.R;
+import vungnv.com.foodappmerchant.activities.MapsActivity;
 import vungnv.com.foodappmerchant.activities.RegisterActivity;
 import vungnv.com.foodappmerchant.constant.Constant;
 import vungnv.com.foodappmerchant.model.CategoryModel;
@@ -43,6 +45,7 @@ import vungnv.com.foodappmerchant.model.UserModel;
 import vungnv.com.foodappmerchant.utils.ImagePicker;
 
 public class InformationFragment extends Fragment implements Constant {
+    private Button btnMap;
 
 
 
@@ -66,10 +69,18 @@ public class InformationFragment extends Fragment implements Constant {
         View view = inflater.inflate(R.layout.fragment_infomation, container, false);
         init(view);
 
+        btnMap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getContext(), MapsActivity.class));
+            }
+        });
+
+
         return view;
     }
     private void init(View view) {
-
+        btnMap = view.findViewById(R.id.btnMap);
     }
 
 }

@@ -5,17 +5,11 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.annotation.SuppressLint;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.ColorStateList;
@@ -23,7 +17,6 @@ import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -37,7 +30,6 @@ import vungnv.com.foodappmerchant.constant.Constant;
 import vungnv.com.foodappmerchant.ui.account.MangerAccountFragment;
 import vungnv.com.foodappmerchant.ui.home.OrderFragment;
 import vungnv.com.foodappmerchant.ui.information.InformationFragment;
-import vungnv.com.foodappmerchant.ui.manager_menu.ManageMenuActivity;
 import vungnv.com.foodappmerchant.ui.manager_menu.ManageMenuFragment;
 import vungnv.com.foodappmerchant.utils.NetworkChangeListener;
 import vungnv.com.foodappmerchant.utils.createNotificationChannel;
@@ -61,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setContentView(R.layout.activity_main);
 
         init();
-        notification.createNotificationChannel(MainActivity.this);
+        notification.mCreateNotificationChannel(MainActivity.this);
         //vungnv.com.foodappmerchant.utils.createNotification.mCreateNotification(MainActivity.this, "Tiêu đề", "Nội dung");
 
         String currentLanguage = getResources().getConfiguration().locale.getLanguage();

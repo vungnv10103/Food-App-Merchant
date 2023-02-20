@@ -73,4 +73,7 @@
     <string name="deleted">Delete</string>
     <string name="confirm">Confirm</string>
     <string name="confirm_delete">Are you sure you want to delete?</string>
+    <string name="discount">Discount</string>
+    <string name="title_activity_maps">MapsActivity</string>
+    <string name="key_map">AIzaSyDOqvpzZHLSZxeeN0EEED41G-1nk5xNKEU</string>
 </resources>
