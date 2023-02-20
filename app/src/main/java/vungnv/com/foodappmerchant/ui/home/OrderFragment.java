@@ -1,17 +1,10 @@
 package vungnv.com.foodappmerchant.ui.home;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
-import android.content.pm.PackageManager;
-import android.location.Address;
-import android.location.Geocoder;
-import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -25,6 +18,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -32,16 +27,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
 
 import dmax.dialog.SpotsDialog;
-import vungnv.com.foodappmerchant.MainActivity;
 import vungnv.com.foodappmerchant.R;
 import vungnv.com.foodappmerchant.adapters.OrderAdapter;
 import vungnv.com.foodappmerchant.constant.Constant;
@@ -49,6 +38,7 @@ import vungnv.com.foodappmerchant.dao.OrderDAO;
 import vungnv.com.foodappmerchant.dao.UsersDAO;
 import vungnv.com.foodappmerchant.model.Order;
 import vungnv.com.foodappmerchant.model.UserModel;
+import vungnv.com.foodappmerchant.utils.createNotification;
 import vungnv.com.foodappmerchant.utils.createNotificationChannel;
 
 public class OrderFragment extends Fragment implements Constant, SwipeRefreshLayout.OnRefreshListener {
@@ -66,11 +56,12 @@ public class OrderFragment extends Fragment implements Constant, SwipeRefreshLay
 
     private SpotsDialog processDialog;
     private final long delay = 1000;
+    private String idMerchant = "";
     private int temp = 0;
-    private final int waitingTime = 20;
     private ArrayList<Order> aListOrder = new ArrayList<>();
 
     createNotificationChannel notification = new createNotificationChannel();
+    createNotification createNotification = new createNotification();
 
     public OrderFragment() {
 
@@ -98,10 +89,10 @@ public class OrderFragment extends Fragment implements Constant, SwipeRefreshLay
                 getResources().getColor(R.color.green));
 
         FirebaseAuth auth = FirebaseAuth.getInstance();
-        String idMerchant = auth.getUid();
+        idMerchant = auth.getUid();
         getListOrder(idMerchant);
         //refreshList(idMerchant);
-        refreshWaitingTime();
+        // refreshWaitingTime();
 
 
         return view;
@@ -115,13 +106,12 @@ public class OrderFragment extends Fragment implements Constant, SwipeRefreshLay
         rcvListOrder = view.findViewById(R.id.rcvListOrder);
         processDialog = new SpotsDialog(getContext(), R.style.Custom);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            notification.createNotificationChannel(requireContext());
+            notification.mCreateNotificationChannel(requireContext());
         }
     }
 
     private void getListOrder(String idMerchant) {
 
-        processDialog.show();
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("list_order").child(idMerchant);
         ref.addValueEventListener(new ValueEventListener() {
             @Override
@@ -130,11 +120,12 @@ public class OrderFragment extends Fragment implements Constant, SwipeRefreshLay
                 for (DataSnapshot ds : snapshot.getChildren()) {
                     Order order = ds.getValue(Order.class);
                     assert order != null;
-                    vungnv.com.foodappmerchant.utils.createNotification.mCreateNotification(getContext(), "Có đơn hàng mới", order.dateTime.toString());
-                    aListOrder.add(order);
-                }
+                    if (order.status == 1) {
+                        aListOrder.add(order);
+                        setData(aListOrder);
+                    }
 
-                setData(aListOrder);
+                }
             }
 
             @Override
@@ -143,89 +134,146 @@ public class OrderFragment extends Fragment implements Constant, SwipeRefreshLay
                 processDialog.dismiss();
             }
         });
+
     }
 
     private void setData(ArrayList<Order> aListOrder) {
 
         if (aListOrder.size() == 0) {
-            processDialog.dismiss();
             orderAdapter = new OrderAdapter(getContext(), aListOrder);
             rcvListOrder.setAdapter(orderAdapter);
             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
             rcvListOrder.setLayoutManager(linearLayoutManager);
-//            if (temp==0){
-               //Toast.makeText(getContext(), "Hiện không có đơn nào !", Toast.LENGTH_SHORT).show();
-//            }
-          //  temp++;
+            if (temp == 0) {
+                Toast.makeText(getContext(), "Hiện không có đơn nào !", Toast.LENGTH_SHORT).show();
+            }
+            temp++;
 
             return;
         }
         for (int i = 0; i < aListOrder.size(); i++) {
             Order item = new Order();
             Order value = aListOrder.get(i);
+            item.pos = value.pos;
             item.id = value.id;
             item.idUser = value.idUser;
             item.dateTime = value.dateTime;
-            item.waitingTime = waitingTime; //600
+            item.waitingTime = value.waitingTime;
             item.items = value.items;
             item.quantity = value.quantity;
             item.status = value.status;
+            item.check = 1;
             item.price = value.price;
             item.notes = value.notes;
             if (orderDAO.insert(item) > 0) {
                 Log.d(TAG, "save data to local db order success");
             } else {
-                Log.d(TAG, "save data to local db order fail or item exist");
+                // Log.d(TAG, "save data to local db order fail or item exist");
+                Order item1 = new Order();
+                item1.id = value.id;
+                item1.waitingTime = value.waitingTime;
+                if (orderDAO.updateWaitingTime(item1) > 0) {
+                    Log.d(TAG, "update time success with idOrder: " + value.id + " current time: " + value.waitingTime);
+                } else {
+                    Log.d(TAG, "update time fail");
+                }
             }
         }
-        listOrder = orderDAO.getALLDefault();
+        refreshList();
+        //showListOrder();
 
+
+    }
+
+    private void showListOrder() {
+
+        listOrder = orderDAO.getALLDefault(1);
+        for (int i = 0; i < listOrder.size(); i++) {
+            if (listOrder.get(i).waitingTime == 1) {
+                Order item = new Order();
+                item.id = listOrder.get(i).id;
+                item.check = 0;
+                if (orderDAO.updateCheck(item) > 0) {
+                    Log.d(TAG, "update check success 1 -> 0");
+                } else {
+                    Log.d(TAG, "update order out of time fail");
+                }
+            }
+        }
 
         orderAdapter = new OrderAdapter(getContext(), listOrder);
         rcvListOrder.setAdapter(orderAdapter);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
         rcvListOrder.setLayoutManager(linearLayoutManager);
-        processDialog.dismiss();
+
     }
 
-    private void refreshWaitingTime() {
+    private void deleteListOrder(String idMerchant, int pos) {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference reference = database.getReference().child("list_order").child(idMerchant).child(String.valueOf(pos));
+        reference.removeValue()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        Log.d(TAG, "Data deleted successfully");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error deleting data", e);
+                    }
+                });
+    }
+
+    private void updateStatusListOrder(String idMerchant, int pos, String id) {
+        DatabaseReference ref = FirebaseDatabase.getInstance()
+                .getReference().child("list_order")
+                .child(idMerchant).child(String.valueOf(pos)).child("status");
+        ref.setValue(0).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+                Toast.makeText(getContext(), AUTO_CANCEL + "\nWith id: " + id, Toast.LENGTH_SHORT).show();
+                Log.d(TAG, AUTO_CANCEL);
+            }
+        });
+    }
+
+    private void refreshList() {
         Thread t1 = new Thread() {
             @SuppressLint("SetTextI18n")
             @Override
             public void run() {
-                listOrder = orderDAO.getALLDefault();
+
                 while (true) {
 
                     new Handler(Looper.getMainLooper()).post(new Runnable() {
                         @Override
                         public void run() {
-                            String idOrder = "";
-                            int waitingTime = 0;
+                            listOrder = orderDAO.getALLDefault(1);
                             for (int i = 0; i < listOrder.size(); i++) {
-                                idOrder = listOrder.get(i).id;
-                                //Log.d(TAG, "idOrder: " + idOrder);
-                                waitingTime = orderDAO.getWaitingTime(idOrder);
-                                waitingTime--;
-                                if (waitingTime == 0) {
-                                    if (orderDAO.deleteOrderOutOfTime(idOrder) > 0) {
-                                        Log.d(TAG, "delete order out of time success");
+                                if (listOrder.get(i).waitingTime == 1) {
+                                    Order item = new Order();
+                                    item.id = listOrder.get(i).id;
+                                    item.check = 0;
+                                    if (orderDAO.updateCheck(item) > 0) {
+                                        Log.d(TAG, "update check success 1 -> 0");
                                     } else {
-                                        Log.d(TAG, "delete order out of time fail");
+                                        Log.d(TAG, "update order out of time fail");
                                     }
                                 }
-
-
-                                Order item = new Order();
-                                item.id = idOrder;
-                                item.waitingTime = waitingTime;
-                                if (orderDAO.updateWaitingTime(item) > 0) {
-                                    Log.d(TAG, "update time success with idOrder: " + idOrder + " current time: " + waitingTime);
-                                } else {
-                                    Log.d(TAG, "update time fail");
-                                }
                             }
-                            aListOrder = (ArrayList<Order>) orderDAO.getALLDefault();
-                            setData(aListOrder);
+                            if (listOrder.size() == 0) {
+                                orderAdapter = new OrderAdapter(getContext(), listOrder);
+                                rcvListOrder.setAdapter(orderAdapter);
+                                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
+                                rcvListOrder.setLayoutManager(linearLayoutManager);
+                                return;
+                            }
+                            orderAdapter = new OrderAdapter(getContext(), listOrder);
+                            rcvListOrder.setAdapter(orderAdapter);
+                            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
+                            rcvListOrder.setLayoutManager(linearLayoutManager);
 
                         }
                     });
@@ -241,65 +289,6 @@ public class OrderFragment extends Fragment implements Constant, SwipeRefreshLay
         };
         t1.start();
     }
-
-
-//    private void refreshList(String idMerchant) {
-//        Thread t1 = new Thread() {
-//            @SuppressLint("SetTextI18n")
-//            @Override
-//            public void run() {
-//                while (true) {
-//                    new Handler(Looper.getMainLooper()).post(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            processDialog.show();
-//                            DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("list_order").child(idMerchant);
-//                            ref.addValueEventListener(new ValueEventListener() {
-//                                @Override
-//                                public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                                    // aListOrder.clear();
-//                                    for (DataSnapshot ds : snapshot.getChildren()) {
-//                                        Order order = ds.getValue(Order.class);
-//                                        assert order != null;
-//                                        vungnv.com.foodappmerchant.utils.createNotification.mCreateNotification(getContext(), "Có đơn hàng mới", order.dateTime.toString());
-//                                        aListOrder.add(order);
-//                                    }
-//                                    if (aListOrder.size() == 0) {
-//                                        processDialog.dismiss();
-//                                        orderAdapter = new OrderAdapter(getContext(), aListOrder);
-//                                        rcvListOrder.setAdapter(orderAdapter);
-//                                        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
-//                                        rcvListOrder.setLayoutManager(linearLayoutManager);
-//                                        Toast.makeText(getContext(), "Hiện không có đơn nào !", Toast.LENGTH_SHORT).show();
-//                                        return;
-//                                    }
-//
-//                                    orderAdapter = new OrderAdapter(getContext(), aListOrder);
-//                                    rcvListOrder.setAdapter(orderAdapter);
-//                                    LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
-//                                    rcvListOrder.setLayoutManager(linearLayoutManager);
-//                                    processDialog.dismiss();
-//                                }
-//
-//                                @Override
-//                                public void onCancelled(@NonNull DatabaseError error) {
-//                                    processDialog.dismiss();
-//                                }
-//                            });
-//                        }
-//                    });
-//
-//
-//                    try {
-//                        Thread.sleep(delay);
-//                    } catch (InterruptedException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//            }
-//        };
-//        t1.start();
-//    }
 
 
     @Override

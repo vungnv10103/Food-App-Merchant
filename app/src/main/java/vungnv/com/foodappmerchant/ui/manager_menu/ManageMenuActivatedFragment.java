@@ -14,15 +14,16 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.gms.tasks.OnSuccessListener;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -37,10 +38,8 @@ import java.util.Objects;
 import dmax.dialog.SpotsDialog;
 import vungnv.com.foodappmerchant.MainActivity;
 import vungnv.com.foodappmerchant.R;
-import vungnv.com.foodappmerchant.activities.AddProductActivity;
 import vungnv.com.foodappmerchant.adapters.ProductsAdapter;
 import vungnv.com.foodappmerchant.constant.Constant;
-import vungnv.com.foodappmerchant.dao.ProductDAO;
 import vungnv.com.foodappmerchant.model.ProductModel;
 
 public class ManageMenuActivatedFragment extends Fragment implements Constant, SwipeRefreshLayout.OnRefreshListener {
@@ -49,7 +48,6 @@ public class ManageMenuActivatedFragment extends Fragment implements Constant, S
     private EditText edSearch;
     private RecyclerView rcvListDishes;
 
-    private ProductDAO productDAO;
     private ProductsAdapter productsAdapter;
     private List<ProductModel> listProduct;
     private ArrayList<ProductModel> aListProduct = new ArrayList<>();
@@ -133,10 +131,21 @@ public class ManageMenuActivatedFragment extends Fragment implements Constant, S
         imgFilter = view.findViewById(R.id.imgFilter);
         edSearch = view.findViewById(R.id.edSearchInMenu);
         rcvListDishes = view.findViewById(R.id.rcvListProductActivated);
-        productDAO = new ProductDAO(getContext());
 
         progressDialog = new SpotsDialog(getContext(), R.style.Custom);
 
+    }
+
+    private void updateStatusMerchant(String idUser, int status) {
+        DatabaseReference ref = FirebaseDatabase.getInstance()
+                .getReference().child("list_user_merchant")
+                .child(idUser).child("status");
+        ref.setValue(status).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+                Log.d(TAG, "update status success");
+            }
+        });
     }
 
     private void listProduct(String idUser) {
@@ -159,9 +168,11 @@ public class ManageMenuActivatedFragment extends Fragment implements Constant, S
                 }
 
                 if (aListProduct.size() == 0) {
+                   // updateStatusMerchant(idUser, 1);
                     Toast.makeText(getContext(), NO_PRODUCT, Toast.LENGTH_SHORT).show();
                     return;
                 }
+                //updateStatusMerchant(idUser, 2);
                 productsAdapter = new ProductsAdapter(getContext(), aListProduct);
                 rcvListDishes.setAdapter(productsAdapter);
                 LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);

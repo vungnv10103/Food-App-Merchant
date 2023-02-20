@@ -7,6 +7,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
@@ -42,9 +43,13 @@ import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
 import java.security.SecureRandom;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
@@ -135,6 +140,15 @@ public class AddProductActivity extends AppCompatActivity implements Constant {
                 progressDialog.show();
                 progressDialog.setCancelable(false);
                 // save data
+                Date currentTime = Calendar.getInstance().getTime();
+                SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                @SuppressLint("SimpleDateFormat") SimpleDateFormat fm = new SimpleDateFormat();
+                fm.applyPattern("HH:mm:ss-z");
+                String sCurrentTime = fm.format(currentTime);
+                String date = df.format(currentTime);
+                // depends on the date and time (split)
+                String idProductNum = date.replaceAll("-", "")
+                        + sCurrentTime.substring(0, sCurrentTime.indexOf("-")).replaceAll(":", "");
 
                 String name = edName.getText().toString().trim();
                 String cate = edCate.getText().toString().trim();
@@ -143,8 +157,12 @@ public class AddProductActivity extends AppCompatActivity implements Constant {
                 String desc = edDesc.getText().toString().trim();
 
                 FirebaseAuth auth = FirebaseAuth.getInstance();
-                getCoordinate(auth.getUid());
-                upLoadProduct("idProduct",auth.getUid(), cate, fileName, name, desc, time, price, coordinates);
+                String idMerchant = auth.getUid();
+                getCoordinate(idMerchant);
+                assert idMerchant != null;
+                String idProduct = idMerchant.substring(0, 5).toUpperCase(Locale.ROOT) + idProductNum;
+
+                upLoadProduct(idProduct, auth.getUid(), cate, fileName, name, desc, time, price, coordinates);
             }
         });
     }
@@ -286,6 +304,7 @@ public class AddProductActivity extends AppCompatActivity implements Constant {
         reference.updateChildren(updates, new DatabaseReference.CompletionListener() {
             @Override
             public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
+                updateStatusMerchant(idUser, 2);
                 Toast.makeText(AddProductActivity.this, REQUEST_FORM, Toast.LENGTH_SHORT).show();
                 progressDialog.dismiss();
                 clearForm();
@@ -293,6 +312,18 @@ public class AddProductActivity extends AppCompatActivity implements Constant {
         });
 
 
+    }
+
+    private void updateStatusMerchant(String idUser, int status) {
+        DatabaseReference ref = FirebaseDatabase.getInstance()
+                .getReference().child("list_user_merchant")
+                .child(idUser).child("status");
+        ref.setValue(status).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+                Log.d(TAG, "update status success");
+            }
+        });
     }
 
     @Override
