@@ -57,6 +57,7 @@ import vungnv.com.foodappmerchant.R;
 import vungnv.com.foodappmerchant.activities.LoginActivity;
 import vungnv.com.foodappmerchant.constant.Constant;
 import vungnv.com.foodappmerchant.model.CategoryModel;
+import vungnv.com.foodappmerchant.model.Product;
 import vungnv.com.foodappmerchant.model.ProductModel;
 import vungnv.com.foodappmerchant.utils.ImagePicker;
 import vungnv.com.foodappmerchant.utils.NetworkChangeListener;
@@ -77,9 +78,11 @@ public class ShowDetailItemProductActivity extends AppCompatActivity implements 
     private TextView tvDelete;
     private String fileName = "";
     private int temp = 0;
+    private String id = "";
 
 
     private ArrayList<CategoryModel> aListCate;
+    private final ArrayList<Product> aListProducts = new ArrayList<>();
     ArrayAdapter<String> adapterItems;
     FirebaseAuth auth = FirebaseAuth.getInstance();
 
@@ -194,6 +197,28 @@ public class ShowDetailItemProductActivity extends AppCompatActivity implements 
                         dialog.dismiss();
                     }
                 });
+                // update status in list_product_all
+                String path = "list_product_all";
+                DatabaseReference ref = FirebaseDatabase.getInstance().getReference(path);
+                ref.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        aListProducts.clear();
+                        for (DataSnapshot childSnapshot1 : snapshot.getChildren()) {
+                            Product value = childSnapshot1.getValue(Product.class);
+                            assert value != null;
+                            if (value.id.equals(id)) {
+                                aListProducts.add(value);
+                            }
+                        }
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
                 imgSave.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -209,7 +234,20 @@ public class ShowDetailItemProductActivity extends AppCompatActivity implements 
                         ref.setValue(status).addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void unused) {
+                                Log.d(TAG, "update status in list_product success");
                                 Toast.makeText(ShowDetailItemProductActivity.this, UPDATE_STATUS_SUCCESS, Toast.LENGTH_SHORT).show();
+
+                                int pos = aListProducts.get(0).pos;
+                                DatabaseReference ref = FirebaseDatabase.getInstance()
+                                        .getReference().child("list_product_all")
+                                        .child(String.valueOf(pos)).child("status");
+                                ref.setValue(status).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void unused) {
+                                        Log.d(TAG, "update status in list_product_all success");
+                                    }
+                                });
+
                             }
                         });
 
@@ -259,6 +297,7 @@ public class ShowDetailItemProductActivity extends AppCompatActivity implements 
                 String name = edName.getText().toString().trim();
                 String type = edCate.getText().toString().trim();
                 String price = edPrice.getText().toString().trim();
+                String discount = edDiscount.getText().toString().trim();
                 String time = edTime.getText().toString().trim();
                 String desc = edDesc.getText().toString().trim();
 
@@ -268,17 +307,17 @@ public class ShowDetailItemProductActivity extends AppCompatActivity implements 
                 Log.d(TAG, "temp: " + temp);
                 if (temp > 0) {
                     if (status == -1) {
-                        updateData(fileName, name, type, Double.parseDouble(price), time, desc);
+                        updateData(fileName, name, type, Double.parseDouble(price), Double.parseDouble(discount), time, desc);
                     } else {
-                        updateData(pos, fileName, name, type, Double.parseDouble(price), time, desc);
+                        updateData(pos, fileName, name, type, Double.parseDouble(price), Double.parseDouble(discount), time, desc);
                     }
 
 
                 } else {
                     if (status == -1) {
-                        updateData(name, type, Double.parseDouble(price), time, desc);
+                        updateData(name, type, Double.parseDouble(price), Double.parseDouble(discount), time, desc);
                     } else {
-                        updateData(pos, name, type, Double.parseDouble(price), time, desc);
+                        updateData(pos, name, type, Double.parseDouble(price), Double.parseDouble(discount), time, desc);
                     }
 
 
@@ -407,6 +446,7 @@ public class ShowDetailItemProductActivity extends AppCompatActivity implements 
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 ProductModel model = snapshot.getValue(ProductModel.class);
                 assert model != null;
+                id = model.id;
                 String img = model.img;
                 String name = model.name;
                 String type = model.type;
@@ -466,7 +506,7 @@ public class ShowDetailItemProductActivity extends AppCompatActivity implements 
         progressDialog.dismiss();
     }
 
-    private void updateData(int pos, String img, String name, String type, Double price, String time, String desc) {
+    private void updateData(int pos, String img, String name, String type, Double price, Double discount, String time, String desc) {
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         DatabaseReference databaseReference = firebaseDatabase.getReference("list_product/" + auth.getUid()).child(String.valueOf(pos));
         Map<String, Object> productUpdates = new HashMap<>();
@@ -474,6 +514,7 @@ public class ShowDetailItemProductActivity extends AppCompatActivity implements 
         productUpdates.put("name", name);
         productUpdates.put("type", type);
         productUpdates.put("price", price);
+        productUpdates.put("discount", discount);
         productUpdates.put("timeDelay", time);
         productUpdates.put("description", desc);
         databaseReference.updateChildren(productUpdates, new DatabaseReference.CompletionListener() {
@@ -486,13 +527,15 @@ public class ShowDetailItemProductActivity extends AppCompatActivity implements 
 
     }
 
-    private void updateData(int pos, String name, String type, Double price, String time, String desc) {
+    private void updateData(int pos, String name, String type, Double price, Double discount,
+                            String time, String desc) {
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         DatabaseReference databaseReference = firebaseDatabase.getReference("list_product/" + auth.getUid()).child(String.valueOf(pos));
         Map<String, Object> productUpdates = new HashMap<>();
         productUpdates.put("name", name);
         productUpdates.put("type", type);
         productUpdates.put("price", price);
+        productUpdates.put("discount", discount);
         productUpdates.put("timeDelay", time);
         productUpdates.put("description", desc);
         databaseReference.updateChildren(productUpdates, new DatabaseReference.CompletionListener() {
@@ -505,7 +548,8 @@ public class ShowDetailItemProductActivity extends AppCompatActivity implements 
 
     }
 
-    private void updateData(String img, String name, String type, Double price, String time, String desc) {
+    private void updateData(String img, String name, String type, Double price, Double discount,
+                            String time, String desc) {
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         DatabaseReference databaseReference = firebaseDatabase.getReference("list_product_not_active/" + auth.getUid()).child(name);
         Map<String, Object> productUpdates = new HashMap<>();
@@ -513,6 +557,7 @@ public class ShowDetailItemProductActivity extends AppCompatActivity implements 
         productUpdates.put("name", name);
         productUpdates.put("type", type);
         productUpdates.put("price", price);
+        productUpdates.put("discount", discount);
         productUpdates.put("timeDelay", time);
         productUpdates.put("description", desc);
         databaseReference.updateChildren(productUpdates, new DatabaseReference.CompletionListener() {
@@ -525,13 +570,14 @@ public class ShowDetailItemProductActivity extends AppCompatActivity implements 
 
     }
 
-    private void updateData(String name, String type, Double price, String time, String desc) {
+    private void updateData(String name, String type, Double price, Double discount, String time, String desc) {
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         DatabaseReference databaseReference = firebaseDatabase.getReference("list_product_not_active/" + auth.getUid()).child(name);
         Map<String, Object> productUpdates = new HashMap<>();
         productUpdates.put("name", name);
         productUpdates.put("type", type);
         productUpdates.put("price", price);
+        productUpdates.put("discount", discount);
         productUpdates.put("timeDelay", time);
         productUpdates.put("description", desc);
         databaseReference.updateChildren(productUpdates, new DatabaseReference.CompletionListener() {
