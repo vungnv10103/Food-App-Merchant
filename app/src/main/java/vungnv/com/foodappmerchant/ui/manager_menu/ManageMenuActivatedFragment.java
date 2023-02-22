@@ -161,7 +161,7 @@ public class ManageMenuActivatedFragment extends Fragment implements Constant, S
                     if (model == null) {
                         return;
                     }
-                    if (model.status == 2) {
+                    if (model.status != -1) {
                         aListProduct.add(model);
                     }
 

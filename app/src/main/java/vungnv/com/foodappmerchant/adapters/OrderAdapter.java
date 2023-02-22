@@ -27,6 +27,12 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,7 +47,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
     private final List<Order> listOld;
     private static OrderDAO orderDAO;
     private final Context context;
-    private static Dialog dialog;
+
 
 
     public OrderAdapter(Context context, List<Order> list) {
@@ -64,13 +70,18 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
 
         holder.tvNameProduct.setText(item.items);
         holder.tvQuantity.setText(item.quantity + "x");
-        holder.tvWaitingTime.setText(item.waitingTime + "s");
+        holder.tvPrice.setText(item.price + "đ");
+
+        int sTime = item.waitingTime;
+        int minute = sTime / 60;
+        int second = sTime % 60;
+        holder.tvWaitingTime.setText(minute + ":" + second);
 //        if (item.waitingTime == 15) {
 //            showDialog(context, true);
 //        }
-        if (item.waitingTime == 2) {
-            showDialog(context, false);
-        }
+//        if (item.waitingTime == 2) {
+//            showDialog(context, item.id, 2, item.pos);
+//        }
 
     }
 
@@ -112,7 +123,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView tvQuantity, tvNameProduct, tvWaitingTime;
+        TextView tvQuantity, tvNameProduct, tvPrice, tvWaitingTime;
         int temp = 0;
 
         public ViewHolder(@NonNull View itemView) {
@@ -120,47 +131,69 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
 
             tvQuantity = itemView.findViewById(R.id.tvQuantity);
             tvNameProduct = itemView.findViewById(R.id.tvNameProduct);
+            tvPrice = itemView.findViewById(R.id.tvPrice);
             tvWaitingTime = itemView.findViewById(R.id.tvWaitingTime);
+
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
-                    if (temp == 0) {
-                        // Toast.makeText(v.getContext(), "" + list.get(getAdapterPosition()).id, Toast.LENGTH_SHORT).show();
-                        showDialog(v.getContext(), true);
-                        temp++;
-
-                    }
+                    Toast.makeText(v.getContext(), "id: " + list.get(getAdapterPosition()).id, Toast.LENGTH_SHORT).show();
+                    showDialog(v.getContext(), list.get(getAdapterPosition()).waitingTime, list.get(getAdapterPosition()).pos);
+                    temp++;
                 }
             });
         }
     }
 
-    private static void showDialog(Context context, boolean isCheck) {
-        if (dialog == null) {
-            dialog = new Dialog(context);
-            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-            dialog.setContentView(R.layout.bottom_sheet);
-            dialog.setCancelable(false);
+    private void getOrderByID(String idMerchant,int pos) {
 
-            ImageButton imgClose = dialog.findViewById(R.id.imgClose);
-            imgClose.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    dialog.dismiss();
-                }
-            });
-            dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
-            dialog.getWindow().setGravity(Gravity.BOTTOM);
-        }
 
-        if (isCheck) {
-            dialog.show();
-        } else {
-            dialog.dismiss();
-        }
+
+    }
+
+    private static void showDialog(Context context, int waitingTime, int pos) {
+        ArrayList<Order> aListOrder = new ArrayList<>();
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("list_order").child("U7mYEzXcSqSdlXKq0xYV8OIruoF2").child(String.valueOf(pos));
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Log.d(TAG, "data choose order: " + snapshot.getValue());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.d(TAG, "onCancelled: " + error.getMessage());
+            }
+        });
+
+        Dialog dialog = new Dialog(context);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.dialog_view_detail_order);
+        dialog.setCancelable(false);
+
+
+        TextView tvID = dialog.findViewById(R.id.tvID);
+        TextView tvTime = dialog.findViewById(R.id.tvTime);
+        TextView tvNameOrderEr = dialog.findViewById(R.id.tvNameOrderer);
+        TextView tvNameProduct = dialog.findViewById(R.id.tvNameProduct);
+        TextView tvNotes = dialog.findViewById(R.id.tvNotes);
+        TextView tvPrice = dialog.findViewById(R.id.tvPrice);
+        TextView tvWaitingTime = dialog.findViewById(R.id.tvWaitingTime);
+
+
+
+
+        ImageButton imgClose = dialog.findViewById(R.id.imgClose);
+        imgClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+        dialog.getWindow().setGravity(Gravity.BOTTOM);
     }
 
 }

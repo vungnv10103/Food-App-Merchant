@@ -122,121 +122,27 @@ public class OrderFragment extends Fragment implements Constant, SwipeRefreshLay
                     assert order != null;
                     if (order.status == 1) {
                         aListOrder.add(order);
-                        setData(aListOrder);
                     }
-
                 }
+                for (int i = 0; i < aListOrder.size(); i++) {
+                    if (aListOrder.get(i).waitingTime != 1) {
+                        orderAdapter = new OrderAdapter(getContext(), aListOrder);
+                        rcvListOrder.setAdapter(orderAdapter);
+                        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
+                        rcvListOrder.setLayoutManager(linearLayoutManager);
+                    }
+                }
+
+
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Log.d(TAG, "onCancelled: " + error.getMessage());
-                processDialog.dismiss();
             }
         });
 
-    }
 
-    private void setData(ArrayList<Order> aListOrder) {
-
-        if (aListOrder.size() == 0) {
-            orderAdapter = new OrderAdapter(getContext(), aListOrder);
-            rcvListOrder.setAdapter(orderAdapter);
-            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
-            rcvListOrder.setLayoutManager(linearLayoutManager);
-            if (temp == 0) {
-                Toast.makeText(getContext(), "Hiện không có đơn nào !", Toast.LENGTH_SHORT).show();
-            }
-            temp++;
-
-            return;
-        }
-        for (int i = 0; i < aListOrder.size(); i++) {
-            Order item = new Order();
-            Order value = aListOrder.get(i);
-            item.pos = value.pos;
-            item.id = value.id;
-            item.idUser = value.idUser;
-            item.dateTime = value.dateTime;
-            item.waitingTime = value.waitingTime;
-            item.items = value.items;
-            item.quantity = value.quantity;
-            item.status = value.status;
-            item.check = 1;
-            item.price = value.price;
-            item.notes = value.notes;
-            if (orderDAO.insert(item) > 0) {
-                Log.d(TAG, "save data to local db order success");
-            } else {
-                // Log.d(TAG, "save data to local db order fail or item exist");
-                Order item1 = new Order();
-                item1.id = value.id;
-                item1.waitingTime = value.waitingTime;
-                if (orderDAO.updateWaitingTime(item1) > 0) {
-                    Log.d(TAG, "update time success with idOrder: " + value.id + " current time: " + value.waitingTime);
-                } else {
-                    Log.d(TAG, "update time fail");
-                }
-            }
-        }
-        refreshList();
-        //showListOrder();
-
-
-    }
-
-    private void showListOrder() {
-
-        listOrder = orderDAO.getALLDefault(1);
-        for (int i = 0; i < listOrder.size(); i++) {
-            if (listOrder.get(i).waitingTime == 1) {
-                Order item = new Order();
-                item.id = listOrder.get(i).id;
-                item.check = 0;
-                if (orderDAO.updateCheck(item) > 0) {
-                    Log.d(TAG, "update check success 1 -> 0");
-                } else {
-                    Log.d(TAG, "update order out of time fail");
-                }
-            }
-        }
-
-        orderAdapter = new OrderAdapter(getContext(), listOrder);
-        rcvListOrder.setAdapter(orderAdapter);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
-        rcvListOrder.setLayoutManager(linearLayoutManager);
-
-    }
-
-    private void deleteListOrder(String idMerchant, int pos) {
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference reference = database.getReference().child("list_order").child(idMerchant).child(String.valueOf(pos));
-        reference.removeValue()
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void unused) {
-                        Log.d(TAG, "Data deleted successfully");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "Error deleting data", e);
-                    }
-                });
-    }
-
-    private void updateStatusListOrder(String idMerchant, int pos, String id) {
-        DatabaseReference ref = FirebaseDatabase.getInstance()
-                .getReference().child("list_order")
-                .child(idMerchant).child(String.valueOf(pos)).child("status");
-        ref.setValue(0).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void unused) {
-                Toast.makeText(getContext(), AUTO_CANCEL + "\nWith id: " + id, Toast.LENGTH_SHORT).show();
-                Log.d(TAG, AUTO_CANCEL);
-            }
-        });
     }
 
     private void refreshList() {
@@ -262,13 +168,6 @@ public class OrderFragment extends Fragment implements Constant, SwipeRefreshLay
                                         Log.d(TAG, "update order out of time fail");
                                     }
                                 }
-                            }
-                            if (listOrder.size() == 0) {
-                                orderAdapter = new OrderAdapter(getContext(), listOrder);
-                                rcvListOrder.setAdapter(orderAdapter);
-                                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
-                                rcvListOrder.setLayoutManager(linearLayoutManager);
-                                return;
                             }
                             orderAdapter = new OrderAdapter(getContext(), listOrder);
                             rcvListOrder.setAdapter(orderAdapter);
