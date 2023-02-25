@@ -10,17 +10,17 @@ public class Order {
     public String dateTime;
     public int waitingTime;
     public String items;
-    public int quantity;
+    public String quantity;
     public int status;
     public int check;
-    public Double price;
+    public String price;
     public String notes;
 
     public Order() {
     }
 
     public Order(int pos, String id, String idUser, String dateTime, int waitingTime, String items,
-                 int quantity, int status, int check, Double price, String notes) {
+                 String quantity, int status, int check, String price, String notes) {
         this.pos = pos;
         this.id = id;
         this.idUser = idUser;
