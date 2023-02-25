@@ -33,8 +33,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import vungnv.com.foodappmerchant.R;
 import vungnv.com.foodappmerchant.constant.Constant;
@@ -47,7 +51,6 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
     private final List<Order> listOld;
     private static OrderDAO orderDAO;
     private final Context context;
-
 
 
     public OrderAdapter(Context context, List<Order> list) {
@@ -68,20 +71,27 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Order item = list.get(position);
 
-        holder.tvNameProduct.setText(item.items);
-        holder.tvQuantity.setText(item.quantity + "x");
-        holder.tvPrice.setText(item.price + "đ");
+        holder.tvID.setText(item.id);
+        String[] listPrice = item.price.split("-");
+        double price = 0.0;
+        for (String itemPrice : listPrice) {
+            price += Double.parseDouble(itemPrice);
+        }
+        holder.tvPrice.setText(price + "đ");
+
+        String[] listQuantity = item.quantity.split("-");
+        int quantity = 0;
+        for (String itemQuantity : listQuantity) {
+            quantity += Integer.parseInt(itemQuantity);
+        }
+
+        holder.tvQuantity.setText(quantity + " món");
+
 
         int sTime = item.waitingTime;
         int minute = sTime / 60;
         int second = sTime % 60;
         holder.tvWaitingTime.setText(minute + ":" + second);
-//        if (item.waitingTime == 15) {
-//            showDialog(context, true);
-//        }
-//        if (item.waitingTime == 2) {
-//            showDialog(context, item.id, 2, item.pos);
-//        }
 
     }
 
@@ -123,64 +133,92 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView tvQuantity, tvNameProduct, tvPrice, tvWaitingTime;
+        TextView tvQuantity, tvID, tvPrice, tvWaitingTime;
         int temp = 0;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
             tvQuantity = itemView.findViewById(R.id.tvQuantity);
-            tvNameProduct = itemView.findViewById(R.id.tvNameProduct);
+            tvID = itemView.findViewById(R.id.tvID);
             tvPrice = itemView.findViewById(R.id.tvPrice);
             tvWaitingTime = itemView.findViewById(R.id.tvWaitingTime);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(v.getContext(), "id: " + list.get(getAdapterPosition()).id, Toast.LENGTH_SHORT).show();
-                    showDialog(v.getContext(), list.get(getAdapterPosition()).waitingTime, list.get(getAdapterPosition()).pos);
-                    temp++;
+                    // Toast.makeText(v.getContext(), "id: " + list.get(getAdapterPosition()).id, Toast.LENGTH_SHORT).show();
+                    showDialog(v.getContext(), list.get(getAdapterPosition()).idMerchant, list.get(getAdapterPosition()).pos);
+                    // temp++;
                 }
             });
         }
     }
 
-    private void getOrderByID(String idMerchant,int pos) {
-
+    private void getOrderByID(String idMerchant, int pos) {
 
 
     }
 
-    private static void showDialog(Context context, int waitingTime, int pos) {
-        ArrayList<Order> aListOrder = new ArrayList<>();
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("list_order").child("U7mYEzXcSqSdlXKq0xYV8OIruoF2").child(String.valueOf(pos));
-        ref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Log.d(TAG, "data choose order: " + snapshot.getValue());
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Log.d(TAG, "onCancelled: " + error.getMessage());
-            }
-        });
+    private static void showDialog(Context context, String idMerchant, int pos) {
 
         Dialog dialog = new Dialog(context);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.dialog_view_detail_order);
         dialog.setCancelable(false);
 
-
         TextView tvID = dialog.findViewById(R.id.tvID);
         TextView tvTime = dialog.findViewById(R.id.tvTime);
+        ImageButton imgShowDetailInfoOrder = dialog.findViewById(R.id.imgShowDetailInfoOrder);
         TextView tvNameOrderEr = dialog.findViewById(R.id.tvNameOrderer);
         TextView tvNameProduct = dialog.findViewById(R.id.tvNameProduct);
         TextView tvNotes = dialog.findViewById(R.id.tvNotes);
         TextView tvPrice = dialog.findViewById(R.id.tvPrice);
         TextView tvWaitingTime = dialog.findViewById(R.id.tvWaitingTime);
 
+        // get data
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("list_order").child(idMerchant).child(String.valueOf(pos));
+        ref.addValueEventListener(new ValueEventListener() {
+            @SuppressLint("SetTextI18n")
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Order order = snapshot.getValue(Order.class);
+                if (order != null) {
+                    String dateTime = order.dateTime;
+                    int index = dateTime.indexOf("-");
 
+                    String date = dateTime.substring(0, index);
+                    String time = dateTime.substring(index);
+                    String fmDateTime = date + time;
+
+                    tvID.setText("# " + order.id);
+                    tvNameProduct.setText(order.items);
+                    tvWaitingTime.setText(String.valueOf(order.waitingTime));
+                    tvTime.setText("Nhận đơn lúc: " + fmDateTime);
+
+                    int waitingTime = Integer.parseInt(tvWaitingTime.getText().toString().trim());
+                    if (waitingTime == 1) {
+                        dialog.dismiss();
+                    }
+                    imgShowDetailInfoOrder.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            // show detail time (may be rider) + custom
+                            Toast.makeText(context, "updating...", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
+                }
+
+
+            }
+
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.d(TAG, "onCancelled: " + error.getMessage());
+            }
+        });
 
 
         ImageButton imgClose = dialog.findViewById(R.id.imgClose);
@@ -190,10 +228,13 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
                 dialog.dismiss();
             }
         });
-        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
         dialog.getWindow().setGravity(Gravity.BOTTOM);
+        dialog.show();
+
+
     }
 
 }

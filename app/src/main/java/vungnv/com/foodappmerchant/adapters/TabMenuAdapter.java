@@ -25,6 +25,7 @@ public class TabMenuAdapter extends FragmentStateAdapter {
                 fragment = ManageMenuNoActivatedFragment.newInstance();
                 break;
         }
+        assert fragment != null;
         return fragment;
     }
 

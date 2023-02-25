@@ -92,10 +92,10 @@ public class OrderDAO {
             obj.dateTime = cursor.getString(cursor.getColumnIndex("dateTime"));
             obj.waitingTime = Integer.parseInt(cursor.getString(cursor.getColumnIndex("waitingTime")));
             obj.items = cursor.getString(cursor.getColumnIndex("items"));
-            obj.quantity = Integer.parseInt(cursor.getString(cursor.getColumnIndex("quantity")));
+            obj.quantity = cursor.getString(cursor.getColumnIndex("quantity"));
             obj.status = Integer.parseInt(cursor.getString(cursor.getColumnIndex("status")));
             obj.check = Integer.parseInt(cursor.getString(cursor.getColumnIndex("mCheck")));
-            obj.price = Double.valueOf(cursor.getString(cursor.getColumnIndex("price")));
+            obj.price = cursor.getString(cursor.getColumnIndex("price"));
             obj.notes = cursor.getString(cursor.getColumnIndex("notes"));
 
             list.add(obj);
