@@ -168,23 +168,6 @@ public class ManageMenuActivity extends AppCompatActivity implements Constant, S
 
     }
 
-//    private void listProductLocal() {
-//        listProduct = productDAO.getALLDefault();
-//        if (listProduct.size() == 0) {
-//            Toast.makeText(this, "Hiện không có sản phẩm nào !!", Toast.LENGTH_SHORT).show();
-//            return;
-//        }
-//        productsAdapter = new ProductsAdapter(this, listProduct);
-//        rcvListDishes.setAdapter(productsAdapter);
-//        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
-//        rcvListDishes.setLayoutManager(linearLayoutManager);
-//        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(rcvListDishes.getContext(),
-//                linearLayoutManager.getOrientation());
-//        rcvListDishes.addItemDecoration(dividerItemDecoration);
-//        rcvListDishes.setHasFixedSize(true);
-//        rcvListDishes.setNestedScrollingEnabled(false);
-//
-//    }
 
     @Override
     public void onRefresh() {

@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
@@ -24,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 
@@ -39,11 +41,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
+import vungnv.com.foodappmerchant.MainActivity;
 import vungnv.com.foodappmerchant.R;
 import vungnv.com.foodappmerchant.constant.Constant;
 import vungnv.com.foodappmerchant.dao.OrderDAO;
 import vungnv.com.foodappmerchant.model.Order;
+import vungnv.com.foodappmerchant.utils.createNotificationChannel;
 
 
 public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> implements Constant, Filterable {
@@ -51,9 +56,13 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
     private final List<Order> listOld;
     private static OrderDAO orderDAO;
     private final Context context;
+    createNotificationChannel notification = new createNotificationChannel();
 
 
     public OrderAdapter(Context context, List<Order> list) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            notification.mCreateNotificationChannel(context);
+        }
         this.context = context;
         OrderAdapter.list = list;
         this.listOld = list;
@@ -155,9 +164,60 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
         }
     }
 
-    private void getOrderByID(String idMerchant, int pos) {
+    public void updateList(List<Order> newList) {
+        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new OrderDiffCallback(newList, list));
+        int oldSize = list.size();
+        list.clear();
+        list.addAll(newList);
+        diffResult.dispatchUpdatesTo(this);
+        int newSize = newList.size();
+        if (newSize > oldSize) {
+           // Toast.makeText(context, "You have a new order!" + newList.get(newList.size()-1).items, Toast.LENGTH_SHORT).show();
+            vungnv.com.foodappmerchant.utils.createNotification.mCreateNotification(context, newList.get(newList.size()-1).items, newList.get(newList.size()-1).dateTime);
+        }
+    }
 
+    // Create a DiffUtil.Callback class to calculate the difference between old and new order lists
+    private static class OrderDiffCallback extends DiffUtil.Callback {
+        private final List<Order> oldOrderList;
+        private final List<Order> newOrderList;
 
+        public OrderDiffCallback(List<Order> newOrderList, List<Order> oldOrderList) {
+            this.newOrderList = newOrderList;
+            this.oldOrderList = oldOrderList;
+        }
+
+        @Override
+        public int getOldListSize() {
+            return oldOrderList.size();
+        }
+
+        @Override
+        public int getNewListSize() {
+            return newOrderList.size();
+        }
+
+        @Override
+        public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
+            return oldOrderList.get(oldItemPosition).id == newOrderList.get(newItemPosition).id;
+        }
+
+        @Override
+        public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+            Order oldOrder = oldOrderList.get(oldItemPosition);
+            Order newOrder = newOrderList.get(newItemPosition);
+            return oldOrder.items.equals(newOrder.items)
+                    && Objects.equals(oldOrder.price, newOrder.price)
+                    && Objects.equals(oldOrder.quantity, newOrder.quantity)
+                    && Objects.equals(oldOrder.waitingTime, newOrder.waitingTime)
+                    && Objects.equals(oldOrder.idUser, newOrder.idUser)
+                    && Objects.equals(oldOrder.dateTime, newOrder.dateTime)
+                    && Objects.equals(oldOrder.id, newOrder.id)
+                    && Objects.equals(oldOrder.idMerchant, newOrder.idMerchant)
+                    && Objects.equals(oldOrder.notes, newOrder.notes)
+                    && Objects.equals(oldOrder.pos, newOrder.pos)
+                    && Objects.equals(oldOrder.status, newOrder.status);
+        }
     }
 
     private static void showDialog(Context context, String idMerchant, int pos) {
