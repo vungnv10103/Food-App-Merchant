@@ -37,6 +37,9 @@ public class OrderDAO {
 
         return db.insert("OrdersTemp", null, values);
     }
+    public void deleteCart() {
+        db.execSQL("delete from OrdersTemp");
+    }
 
     public int getWaitingTime(String id) {
         String sql = "SELECT * FROM OrdersTemp WHERE id=?";

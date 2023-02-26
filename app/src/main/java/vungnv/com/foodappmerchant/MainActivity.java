@@ -78,9 +78,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         tvHome.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(getApplicationContext(), MainActivity.class));
-                finishAffinity();
-
+                replaceFragment(OrderFragment.newInstance());
+                tvHome.setBackgroundColor(Color.DKGRAY);
+                tvManagerAccount.setBackgroundColor(Color.TRANSPARENT);
+                drawerLayout.closeDrawer(navigationView);
             }
         });
 
@@ -89,7 +90,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void onClick(View v) {
                 replaceFragment(MangerAccountFragment.newInstance());
                 tvManagerAccount.setBackgroundColor(Color.DKGRAY);
+                tvHome.setBackgroundColor(Color.TRANSPARENT);
                 drawerLayout.closeDrawer(navigationView);
+
             }
         });
 
@@ -99,13 +102,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         navigationView.setItemIconTintList(ColorStateList.valueOf(Color.WHITE));
         navigationView.setNavigationItemSelectedListener(this);
-        //replaceFragment(OrderFragment.newInstance());
-
-        Fragment initialFragment = new OrderFragment();
-        getSupportFragmentManager().beginTransaction()
-                .add(R.id.frameLayout, initialFragment)
-                .addToBackStack(null)
-                .commit();
+        replaceFragment(OrderFragment.newInstance());
 
     }
 
@@ -148,6 +145,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
 
         }
+        tvHome.setBackgroundColor(Color.TRANSPARENT);
+        tvManagerAccount.setBackgroundColor(Color.TRANSPARENT);
         drawerLayout.closeDrawer(navigationView);
         return true;
     }
@@ -156,7 +155,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void replaceFragment(Fragment fra) {
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.frameLayout, fra);
-        fragmentTransaction.addToBackStack(null);
+//        fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }
 

@@ -1,11 +1,12 @@
 package vungnv.com.foodappmerchant.ui.home;
 
+
 import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -25,6 +26,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import dmax.dialog.SpotsDialog;
 import vungnv.com.foodappmerchant.R;
@@ -38,12 +40,12 @@ public class OrderFragment extends Fragment implements Constant, SwipeRefreshLay
     private SwipeRefreshLayout swipeRefreshLayout;
     private RecyclerView rcvListOrder;
     private OrderAdapter orderAdapter;
-
+    String idMerchant = "";
     private SpotsDialog processDialog;
-    private final ArrayList<Order> aListOrder = new ArrayList<>();
-
     createNotificationChannel notification = new createNotificationChannel();
     createNotification createNotification = new createNotification();
+
+    private ValueEventListener valueEventListener;
 
     public OrderFragment() {
 
@@ -71,7 +73,7 @@ public class OrderFragment extends Fragment implements Constant, SwipeRefreshLay
                 getResources().getColor(R.color.green));
 
         FirebaseAuth auth = FirebaseAuth.getInstance();
-        String idMerchant = auth.getUid();
+        idMerchant = auth.getUid();
         getListOrder(idMerchant);
 
         return view;
@@ -90,33 +92,36 @@ public class OrderFragment extends Fragment implements Constant, SwipeRefreshLay
     private void getListOrder(String idMerchant) {
 
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("list_order").child(idMerchant);
-        ref.addValueEventListener(new ValueEventListener() {
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                aListOrder.clear();
+                List<Order> newOrderList = new ArrayList<>();
                 for (DataSnapshot ds : snapshot.getChildren()) {
                     Order order = ds.getValue(Order.class);
                     assert order != null;
                     if (order.status == 1) {
-                        aListOrder.add(order);
+                        newOrderList.add(order);
+                        Log.d(TAG, "add");
                     }
                 }
-
-                if (aListOrder.size() == 0) {
-                    orderAdapter = new OrderAdapter(getContext(), aListOrder);
-                    rcvListOrder.setAdapter(orderAdapter);
-                    LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
-                    rcvListOrder.setLayoutManager(linearLayoutManager);
+                if (newOrderList.isEmpty()) {
                     Toast.makeText(getContext(), "Hết đơn", Toast.LENGTH_SHORT).show();
+                    if (orderAdapter != null) {
+                        orderAdapter.updateList(newOrderList);
+                        Log.d(TAG, "add1");
+                    }
+                } else {
+                    if (orderAdapter == null) {
+                        orderAdapter = new OrderAdapter(getContext(), newOrderList);
+                        rcvListOrder.setAdapter(orderAdapter);
+                        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
+                        rcvListOrder.setLayoutManager(linearLayoutManager);
+                        Log.d(TAG, "add2");
+                    } else {
+                        orderAdapter.updateList(newOrderList);
+                        Log.d(TAG, "add3");
+                    }
                 }
-                for (int i = 0; i < aListOrder.size(); i++) {
-                    orderAdapter = new OrderAdapter(getContext(), aListOrder);
-                    rcvListOrder.setAdapter(orderAdapter);
-                    LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
-                    rcvListOrder.setLayoutManager(linearLayoutManager);
-                }
-
-
             }
 
             @Override
@@ -125,7 +130,58 @@ public class OrderFragment extends Fragment implements Constant, SwipeRefreshLay
             }
         });
 
+    }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("list_order").child(idMerchant);
+        valueEventListener = ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                List<Order> newOrderList = new ArrayList<>();
+                for (DataSnapshot ds : snapshot.getChildren()) {
+                    Order order = ds.getValue(Order.class);
+                    assert order != null;
+                    if (order.status == 1) {
+                        newOrderList.add(order);
+                        Log.d(TAG, "add");
+                    }
+                }
+                if (newOrderList.isEmpty()) {
+                    Toast.makeText(getContext(), "Hết đơn", Toast.LENGTH_SHORT).show();
+                    if (orderAdapter != null) {
+                        orderAdapter.updateList(newOrderList);
+                        Log.d(TAG, "add1");
+                    }
+                } else {
+                    if (orderAdapter == null) {
+                        orderAdapter = new OrderAdapter(getContext(), newOrderList);
+                        rcvListOrder.setAdapter(orderAdapter);
+                        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
+                        rcvListOrder.setLayoutManager(linearLayoutManager);
+                        Log.d(TAG, "add2");
+                    } else {
+                        orderAdapter.updateList(newOrderList);
+                        Log.d(TAG, "add3");
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.d(TAG, "onCancelled: " + error.getMessage());
+            }
+        });
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (valueEventListener != null) {
+            DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("list_order").child(idMerchant);
+            ref.removeEventListener(valueEventListener);
+        }
     }
 
     @Override
@@ -136,7 +192,9 @@ public class OrderFragment extends Fragment implements Constant, SwipeRefreshLay
             public void run() {
                 swipeRefreshLayout.setRefreshing(false);
                 // reload list order
-                //Toast.makeText(getContext(), UPDATE_DATA, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), UPDATE_DATA, Toast.LENGTH_SHORT).show();
+                getListOrder(idMerchant);
+
 
             }
         }, 1500);
