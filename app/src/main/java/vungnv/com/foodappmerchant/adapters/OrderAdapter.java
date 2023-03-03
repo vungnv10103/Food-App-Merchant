@@ -43,10 +43,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
-import vungnv.com.foodappmerchant.MainActivity;
 import vungnv.com.foodappmerchant.R;
 import vungnv.com.foodappmerchant.constant.Constant;
-import vungnv.com.foodappmerchant.dao.OrderDAO;
 import vungnv.com.foodappmerchant.model.Order;
 import vungnv.com.foodappmerchant.utils.createNotificationChannel;
 
@@ -54,7 +52,6 @@ import vungnv.com.foodappmerchant.utils.createNotificationChannel;
 public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> implements Constant, Filterable {
     private static List<Order> list;
     private final List<Order> listOld;
-    private static OrderDAO orderDAO;
     private final Context context;
     createNotificationChannel notification = new createNotificationChannel();
 

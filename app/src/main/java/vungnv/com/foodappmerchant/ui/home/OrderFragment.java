@@ -101,14 +101,12 @@ public class OrderFragment extends Fragment implements Constant, SwipeRefreshLay
                     assert order != null;
                     if (order.status == 1) {
                         newOrderList.add(order);
-                        Log.d(TAG, "add");
                     }
                 }
                 if (newOrderList.isEmpty()) {
                     Toast.makeText(getContext(), "Hết đơn", Toast.LENGTH_SHORT).show();
                     if (orderAdapter != null) {
                         orderAdapter.updateList(newOrderList);
-                        Log.d(TAG, "add1");
                     }
                 } else {
                     if (orderAdapter == null) {
@@ -116,10 +114,8 @@ public class OrderFragment extends Fragment implements Constant, SwipeRefreshLay
                         rcvListOrder.setAdapter(orderAdapter);
                         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
                         rcvListOrder.setLayoutManager(linearLayoutManager);
-                        Log.d(TAG, "add2");
                     } else {
                         orderAdapter.updateList(newOrderList);
-                        Log.d(TAG, "add3");
                     }
                 }
             }
