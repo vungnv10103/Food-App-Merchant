@@ -3,7 +3,7 @@ package vungnv.com.foodappmerchant.model;
 import java.util.HashMap;
 
 public class ProductModel {
-    public int stt;
+    public int pos;
     public String id;
     public String idUser;
     public String type;

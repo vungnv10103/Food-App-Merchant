@@ -54,7 +54,7 @@ import java.util.Objects;
 
 import dmax.dialog.SpotsDialog;
 import vungnv.com.foodappmerchant.R;
-import vungnv.com.foodappmerchant.activities.LoginActivity;
+
 import vungnv.com.foodappmerchant.constant.Constant;
 import vungnv.com.foodappmerchant.model.CategoryModel;
 import vungnv.com.foodappmerchant.model.Product;
@@ -65,7 +65,7 @@ import vungnv.com.foodappmerchant.utils.NetworkChangeListener;
 public class ShowDetailItemProductActivity extends AppCompatActivity implements Constant, SwipeRefreshLayout.OnRefreshListener {
     private SwipeRefreshLayout swipeRefreshLayout;
     private Toolbar toolbar;
-    private TextView tvDemo, tvNameProduct;
+    private TextView tvDemo, tvOutOfStock, tvNameProduct;
     private ImageView imgProduct;
     private EditText edName, edPrice, edDiscount, edTime, edDesc;
     private AutoCompleteTextView edCate;
@@ -79,6 +79,7 @@ public class ShowDetailItemProductActivity extends AppCompatActivity implements 
     private String fileName = "";
     private int temp = 0;
     private String id = "";
+    private int position = 0;
 
 
     private ArrayList<CategoryModel> aListCate;
@@ -119,13 +120,14 @@ public class ShowDetailItemProductActivity extends AppCompatActivity implements 
         Intent intent = getIntent();
         Bundle bundle = intent.getBundleExtra("data-type");
         if (bundle != null) {
-            int pos = bundle.getInt("pos");
+            String idProduct = bundle.getString("id");
             int status = bundle.getInt("status");
+            int pos = Integer.parseInt(bundle.getString("temp"));
             String name = bundle.getString("name");
             if (status == -1) {
                 getDataNoActive(name);
             } else {
-                getData(pos);
+                getData(idProduct);
             }
 
 
@@ -138,6 +140,7 @@ public class ShowDetailItemProductActivity extends AppCompatActivity implements 
             public void onClick(View v) {
                 assert bundle != null;
                 int status = bundle.getInt("status");
+                int pos = Integer.parseInt(bundle.getString("temp"));
                 if (status == -1) {
                     Toast.makeText(ShowDetailItemProductActivity.this, PRODUCT_NOT_ACTIVATED, Toast.LENGTH_SHORT).show();
                     return;
@@ -152,7 +155,7 @@ public class ShowDetailItemProductActivity extends AppCompatActivity implements 
                 RadioButton rb1 = dialog.findViewById(R.id.rbTempOutStock);
                 RadioButton rb0 = dialog.findViewById(R.id.rbNotAvailable);
                 RadioButton rb2 = dialog.findViewById(R.id.rbAvailable);
-                int pos = bundle.getInt("pos");
+
                 FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
                 DatabaseReference databaseReference = firebaseDatabase.getReference("list_product/" + auth.getUid()).child(String.valueOf(pos));
                 databaseReference.addValueEventListener(new ValueEventListener() {
@@ -208,7 +211,7 @@ public class ShowDetailItemProductActivity extends AppCompatActivity implements 
                             Product value = childSnapshot1.getValue(Product.class);
                             assert value != null;
                             if (value.id.equals(id)) {
-                                aListProducts.add(value);
+                                position = value.pos;
                             }
                         }
 
@@ -223,8 +226,8 @@ public class ShowDetailItemProductActivity extends AppCompatActivity implements 
                     @Override
                     public void onClick(View v) {
                         // change status
-                        int pos = bundle.getInt("pos");
 
+                        int pos = Integer.parseInt(bundle.getString("temp"));
                         int selectedId = radioGroup.getCheckedRadioButtonId();
                         RadioButton radioButton = dialog.findViewById(selectedId);
                         int status = map.get(radioButton.getText().toString());
@@ -237,10 +240,10 @@ public class ShowDetailItemProductActivity extends AppCompatActivity implements 
                                 Log.d(TAG, "update status in list_product success");
                                 Toast.makeText(ShowDetailItemProductActivity.this, UPDATE_STATUS_SUCCESS, Toast.LENGTH_SHORT).show();
 
-                                int pos = aListProducts.get(0).pos;
+
                                 DatabaseReference ref = FirebaseDatabase.getInstance()
                                         .getReference().child("list_product_all")
-                                        .child(String.valueOf(pos)).child("status");
+                                        .child(String.valueOf(position)).child("status");
                                 ref.setValue(status).addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void unused) {
@@ -304,6 +307,7 @@ public class ShowDetailItemProductActivity extends AppCompatActivity implements 
                 assert bundle != null;
                 int pos = bundle.getInt("pos");
                 int status = bundle.getInt("status");
+                Toast.makeText(ShowDetailItemProductActivity.this, "" + status, Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "temp: " + temp);
                 if (temp > 0) {
                     if (status == -1) {
@@ -356,6 +360,7 @@ public class ShowDetailItemProductActivity extends AppCompatActivity implements 
         swipeRefreshLayout.setOnRefreshListener(this);
         toolbar = findViewById(R.id.toolBarManageMenu);
         tvDemo = findViewById(R.id.tvDemo);
+        tvOutOfStock = findViewById(R.id.tvOutOfStock);
         tvNameProduct = findViewById(R.id.tvNameProduct);
         imgProduct = findViewById(R.id.imgProduct);
         edName = findViewById(R.id.edNameProduct);
@@ -437,31 +442,46 @@ public class ShowDetailItemProductActivity extends AppCompatActivity implements 
         });
     }
 
-    private void getData(int pos) {
+    private void getData(String idProduct) {
         progressDialog.show();
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-        DatabaseReference databaseReference = firebaseDatabase.getReference("list_product/" + auth.getUid()).child(String.valueOf(pos));
+        DatabaseReference databaseReference = firebaseDatabase.getReference("list_product/" + auth.getUid());
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                ProductModel model = snapshot.getValue(ProductModel.class);
-                assert model != null;
-                id = model.id;
-                String img = model.img;
-                String name = model.name;
-                String type = model.type;
-                Double price = model.price;
-                Double discount = model.discount;
-                String time = model.timeDelay;
-                String desc = model.description;
-                tvNameProduct.setText(name);
-                setImageProduct(img);
-                edName.setText(name);
-                edCate.setText(type);
-                edPrice.setText(String.valueOf(price));
-                edDiscount.setText(String.valueOf(discount));
-                edTime.setText(time);
-                edDesc.setText(desc);
+                aListProducts.clear();
+                for (DataSnapshot snapshot1 : snapshot.getChildren()) {
+                    Product model = snapshot1.getValue(Product.class);
+                    if (model == null) {
+                        return;
+                    }
+                    if (model.id.equals(idProduct)) {
+                        id = model.id;
+                        int status = model.status;
+                        String img = model.img;
+                        String name = model.name;
+                        String type = model.type;
+                        Double price = model.price;
+                        Double discount = model.discount;
+                        String time = model.timeDelay;
+                        String desc = model.description;
+
+                        tvNameProduct.setText(name);
+                        setImageProduct(img);
+                        if (status==1){
+                            tvOutOfStock.setVisibility(View.VISIBLE);
+                        }
+                        else {
+                            tvOutOfStock.setVisibility(View.INVISIBLE);
+                        }
+                        edName.setText(name);
+                        edCate.setText(type);
+                        edPrice.setText(String.valueOf(price));
+                        edDiscount.setText(String.valueOf(discount));
+                        edTime.setText(time);
+                        edDesc.setText(desc);
+                    }
+                }
             }
 
             @Override

@@ -50,7 +50,7 @@ public class ManageMenuActivatedFragment extends Fragment implements Constant, S
 
     private ProductsAdapter productsAdapter;
     private List<ProductModel> listProduct;
-    private ArrayList<ProductModel> aListProduct = new ArrayList<>();
+    private final ArrayList<ProductModel> aListProduct = new ArrayList<>();
 
     private SpotsDialog progressDialog;
 
