@@ -108,22 +108,39 @@
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/card_view_product"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="260dp"
+                android:layout_height="150dp"
                 android:layout_marginVertical="10dp"
                 app:cardCornerRadius="10dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/llLabel">
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                    <ImageView
+                        android:id="@+id/imgProduct"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:contentDescription="@string/todo"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/default_thumbnail" />
+                    <TextView
+                        android:id="@+id/tvOutOfStock"
+                        android:visibility="invisible"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:textColor="@color/black"
+                        android:gravity="center"
+                        android:textSize="20sp"
+                        android:layout_alignBottom="@+id/imgProduct"
+                        android:fontFamily="@font/roboto_bold"
+                        android:text="@string/out_of_stock"/>
 
-                <ImageView
-                    android:id="@+id/imgProduct"
-                    android:layout_width="260dp"
-                    android:layout_height="150dp"
-                    android:layout_gravity="center"
-                    android:contentDescription="@string/todo"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/default_thumbnail" />
+                </RelativeLayout>
+
+
             </androidx.cardview.widget.CardView>
 
             <com.google.android.material.textfield.TextInputLayout

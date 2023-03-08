@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -51,7 +52,7 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.viewHo
         holder.imgShowDetail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendData(context, position);
+                sendData(context, item.pos, item.id, item.status, item.name);
             }
         });
     }
@@ -75,28 +76,22 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.viewHo
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    sendData(itemView.getContext(), getAdapterPosition());
+                    ProductModel item = list.get(getAdapterPosition());
+                    sendData(itemView.getContext(), item.pos, item.id, item.status, item.name);
                 }
             });
         }
     }
 
-    private static void sendData(Context context, int position) {
-        ProductModel item = list.get(position);
+    private static void sendData(Context context, int pos, String id, int status, String name) {
         Intent intent = new Intent(context, ShowDetailItemProductActivity.class);
         Bundle bundle = new Bundle();
-        bundle.putInt("pos", position);
-        bundle.putInt("status", item.status);
-        Log.d(TAG, "sendData: " + item.status);
-        bundle.putString("img", item.img);
-        bundle.putString("name", item.name);
-        bundle.putString("type", item.type);
-        bundle.putDouble("price", item.price);
-        bundle.putString("time", item.timeDelay);
-        bundle.putString("desc", item.description);
+        bundle.putString("id", id);
+        bundle.putInt("status", status);
+        bundle.putString("name", name);
+        bundle.putString("temp", String.valueOf(pos));
+
         intent.putExtra("data-type", bundle);
-
-
         context.startActivity(intent);
     }
 
