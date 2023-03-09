@@ -350,6 +350,8 @@ public class LoginActivity extends AppCompatActivity implements Constant {
     protected void onStart() {
         IntentFilter intentFilter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
         registerReceiver(networkChangeListener, intentFilter);
+//        startActivity(new Intent(LoginActivity.this, MainActivity.class));
+//        finishAffinity();
         super.onStart();
     }
 

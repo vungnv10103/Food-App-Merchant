@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,15 +20,16 @@ import java.util.List;
 import vungnv.com.foodappmerchant.R;
 import vungnv.com.foodappmerchant.constant.Constant;
 import vungnv.com.foodappmerchant.model.Order;
+import vungnv.com.foodappmerchant.model.Temp;
 
 
-public class OrderAdapterByID extends RecyclerView.Adapter<OrderAdapterByID.ViewHolder> implements Constant, Filterable {
-    private static List<Order> list;
-    private final List<Order> listOld;
+public class OrderAdapterByID extends RecyclerView.Adapter<OrderAdapterByID.ViewHolder> implements Constant{
+    private static List<Temp> list;
+    private final List<Temp> listOld;
     private final Context context;
 
 
-    public OrderAdapterByID(Context context, List<Order> list) {
+    public OrderAdapterByID(Context context, List<Temp> list) {
         this.context = context;
         OrderAdapterByID.list = list;
         this.listOld = list;
@@ -43,11 +45,17 @@ public class OrderAdapterByID extends RecyclerView.Adapter<OrderAdapterByID.View
     @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Order item = list.get(position);
+        Temp item = list.get(position);
 
-        holder.tvNameProduct.setText(item.items);
+        holder.tvNameProduct.setText(item.name);
         holder.tvQuantity.setText(item.quantity + "x");
         holder.tvPrice.setText(item.price + "đ");
+        if (item.notes.length() ==0){
+            holder.tvNotes.setVisibility(View.INVISIBLE);
+        }else {
+            holder.tvNotes.setText("( Ghi chú: " + item.notes + " )");
+        }
+
 
     }
 
@@ -56,40 +64,8 @@ public class OrderAdapterByID extends RecyclerView.Adapter<OrderAdapterByID.View
         return list.size();
     }
 
-    @Override
-    public Filter getFilter() {
-        return new Filter() {
-            @Override
-            protected FilterResults performFiltering(CharSequence constraint) {
-                String str = constraint.toString();
-                if (str.isEmpty()) {
-                    list = listOld;
-                } else {
-                    List<Order> mList = new ArrayList<>();
-                    for (Order item : listOld) {
-                        if (item.id.toLowerCase().contains(str.toLowerCase())) {
-                            mList.add(item);
-                        }
-                    }
-                    list = mList;
-                }
-
-                FilterResults filterResults = new FilterResults();
-                filterResults.values = list;
-                return filterResults;
-            }
-
-            @SuppressLint("NotifyDataSetChanged")
-            @Override
-            protected void publishResults(CharSequence constraint, FilterResults results) {
-//                list = (List<ProductModel>) results.values;
-                notifyDataSetChanged();
-            }
-        };
-    }
-
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView tvQuantity, tvNameProduct, tvPrice;
+        TextView tvQuantity, tvNameProduct, tvPrice, tvNotes;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -97,11 +73,12 @@ public class OrderAdapterByID extends RecyclerView.Adapter<OrderAdapterByID.View
             tvQuantity = itemView.findViewById(R.id.tvQuantity);
             tvNameProduct = itemView.findViewById(R.id.tvNameProduct);
             tvPrice = itemView.findViewById(R.id.tvPrice);
+            tvNotes = itemView.findViewById(R.id.tvNotes);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    // Toast.makeText(v.getContext(), "id: " + list.get(getAdapterPosition()).id, Toast.LENGTH_SHORT).show();
+                     Toast.makeText(v.getContext(), "id: " + list.get(getAdapterPosition()).name, Toast.LENGTH_SHORT).show();
                 }
             });
         }

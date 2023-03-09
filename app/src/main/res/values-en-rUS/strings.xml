@@ -78,4 +78,5 @@
     <string name="key_map">AIzaSyDOqvpzZHLSZxeeN0EEED41G-1nk5xNKEU</string>
     <string name="price_product_demo">99.999đ</string>
     <string name="out_of_stock">Temp out of Stock</string>
+    <string name="quantity">nx</string>
 </resources>
