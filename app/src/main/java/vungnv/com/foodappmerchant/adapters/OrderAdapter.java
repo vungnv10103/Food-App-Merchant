@@ -1,15 +1,11 @@
 package vungnv.com.foodappmerchant.adapters;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.net.Uri;
 import android.os.Build;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -20,12 +16,12 @@ import android.widget.Button;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 
@@ -35,17 +31,14 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 
 import vungnv.com.foodappmerchant.R;
 import vungnv.com.foodappmerchant.constant.Constant;
 import vungnv.com.foodappmerchant.model.Order;
+import vungnv.com.foodappmerchant.model.Temp;
 import vungnv.com.foodappmerchant.utils.createNotificationChannel;
 
 
@@ -53,6 +46,9 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
     private static List<Order> list;
     private final List<Order> listOld;
     private final Context context;
+    static boolean isTvTimeClicked = false;
+    static boolean isTvAddress = false;
+
     createNotificationChannel notification = new createNotificationChannel();
 
 
@@ -169,8 +165,8 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
         diffResult.dispatchUpdatesTo(this);
         int newSize = newList.size();
         if (newSize > oldSize) {
-           // Toast.makeText(context, "You have a new order!" + newList.get(newList.size()-1).items, Toast.LENGTH_SHORT).show();
-            vungnv.com.foodappmerchant.utils.createNotification.mCreateNotification(context, newList.get(newList.size()-1).items, newList.get(newList.size()-1).dateTime);
+            // Toast.makeText(context, "You have a new order!" + newList.get(newList.size()-1).items, Toast.LENGTH_SHORT).show();
+            vungnv.com.foodappmerchant.utils.createNotification.mCreateNotification(context, newList.get(newList.size() - 1).items, newList.get(newList.size() - 1).dateTime);
         }
     }
 
@@ -217,6 +213,21 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
         }
     }
 
+    private static void getNameUser(TextView tvNameOrderEr, String idUser) {
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("list_user_client").child(idUser).child("name");
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                tvNameOrderEr.setText(Objects.requireNonNull(snapshot.getValue()).toString());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
     private static void showDialog(Context context, String idMerchant, int pos) {
 
         Dialog dialog = new Dialog(context);
@@ -226,12 +237,19 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
 
         TextView tvID = dialog.findViewById(R.id.tvID);
         TextView tvTime = dialog.findViewById(R.id.tvTime);
+        TextView tvTimeDone = dialog.findViewById(R.id.tvTimeDone);
         ImageButton imgShowDetailInfoOrder = dialog.findViewById(R.id.imgShowDetailInfoOrder);
+        ImageButton imgShowDetailInfoOrderEr = dialog.findViewById(R.id.imgShowDetailInfoOrderEr);
+        TextView tvResult = dialog.findViewById(R.id.tvResult);
         TextView tvNameOrderEr = dialog.findViewById(R.id.tvNameOrderer);
-        TextView tvNameProduct = dialog.findViewById(R.id.tvNameProduct);
-        TextView tvNotes = dialog.findViewById(R.id.tvNotes);
+        TextView tvAddressOrderEr = dialog.findViewById(R.id.tvAddressOrderEr);
         TextView tvPrice = dialog.findViewById(R.id.tvPrice);
         TextView tvWaitingTime = dialog.findViewById(R.id.tvWaitingTime);
+
+        RecyclerView rcvListOrderByID = dialog.findViewById(R.id.rcvListOrderByID);
+
+        Button btnConfirmOrder = dialog.findViewById(R.id.btnConfirmOrder);
+
 
         // get data
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("list_order").child(idMerchant).child(String.valueOf(pos));
@@ -249,19 +267,94 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
                     String fmDateTime = date + time;
 
                     tvID.setText("# " + order.id);
-                    tvNameProduct.setText(order.items);
-                    tvWaitingTime.setText(String.valueOf(order.waitingTime));
+                    int sTime = order.waitingTime;
+                    int minute = sTime / 60;
+                    int second = sTime % 60;
+                    tvWaitingTime.setText(minute + ":" + second);
                     tvTime.setText("Nhận đơn lúc: " + fmDateTime);
 
-                    int waitingTime = Integer.parseInt(tvWaitingTime.getText().toString().trim());
-                    if (waitingTime == 1) {
+                    if (minute == 0 && second == 1) {
+                        // out of time
                         dialog.dismiss();
                     }
+
+
                     imgShowDetailInfoOrder.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             // show detail time (may be rider) + custom
-                            Toast.makeText(context, "updating...", Toast.LENGTH_SHORT).show();
+                            if(isTvTimeClicked){
+                                //This will shrink textview to 2 lines if it is expanded.
+                                tvTimeDone.setMaxLines(1);
+                                imgShowDetailInfoOrder.setImageResource(R.drawable.ic_arrow_down_black);
+                                isTvTimeClicked = false;
+                            } else {
+                                //This will expand the textview if it is of 2 lines
+                                tvTimeDone.setMaxLines(Integer.MAX_VALUE);
+                                imgShowDetailInfoOrder.setImageResource(R.drawable.ic_arrow_up_black);
+                                isTvTimeClicked = true;
+                            }
+                        }
+                    });
+                    imgShowDetailInfoOrderEr.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if(isTvAddress){
+                                tvAddressOrderEr.setMaxLines(0);
+                                imgShowDetailInfoOrderEr.setImageResource(R.drawable.ic_arrow_down_black);
+                                isTvAddress = false;
+                            } else {
+                                tvAddressOrderEr.setMaxLines(Integer.MAX_VALUE);
+                                imgShowDetailInfoOrderEr.setImageResource(R.drawable.ic_arrow_up_black);
+                                isTvAddress = true;
+                            }
+                        }
+                    });
+
+                    String[] listQuantity = order.quantity.split("-");
+                    int quantity = 0;
+                    for (String itemQuantity : listQuantity) {
+                        quantity += Integer.parseInt(itemQuantity);
+                    }
+                    String[] listPrice = order.price.split("-");
+                    double price = 0.0;
+                    for (String itemPrice : listPrice) {
+                        price += Double.parseDouble(itemPrice);
+                    }
+                    tvResult.setText(price + "đ (" + quantity + ")");
+
+                    String[] listProductName = order.items.split("-");
+                    int temp = 0;
+                    String[] listNotes = order.notes.split("-");
+                    if (listNotes.length == 0) {
+                        temp = 1;
+                    }
+                    List<Temp> list1 = new ArrayList<>();
+                    int numberType = listProductName.length;
+                    for (int i = 0; i < numberType; i++) {
+                        if (temp == 1) {
+                            list1.add(new Temp(Integer.parseInt(listQuantity[i]), listProductName[i], Double.parseDouble(listPrice[i]), ""));
+                        } else {
+                            list1.add(new Temp(Integer.parseInt(listQuantity[i]), listProductName[i], Double.parseDouble(listPrice[i]), listNotes[i]));
+
+                        }
+                    }
+
+                    OrderAdapterByID orderAdapterByID = new OrderAdapterByID(dialog.getContext(), list1);
+                    rcvListOrderByID.setAdapter(orderAdapterByID);
+                    LinearLayoutManager linearLayoutManager = new LinearLayoutManager(dialog.getContext(), RecyclerView.VERTICAL, false);
+                    rcvListOrderByID.setLayoutManager(linearLayoutManager);
+
+                    String idUser = order.idUser;
+
+                    tvPrice.setText(price + "đ");
+                    getNameUser(tvNameOrderEr, idUser);
+
+                    btnConfirmOrder.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            // update status order 1 -> 2
+                            Toast.makeText(context, "current status order: " + order.status, Toast.LENGTH_SHORT).show();
                         }
                     });
 

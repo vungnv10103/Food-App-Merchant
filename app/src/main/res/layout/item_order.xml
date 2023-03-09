@@ -26,13 +26,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
                 android:layout_weight="1"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                tools:ignore="NestedWeights">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/shantell_sans_bold"
-                    android:text="# "
+                    android:fontFamily="@font/shan_tell_sans_bold"
+                    android:text="@string/char1"
                     android:textColor="@color/black"
                     android:textSize="12sp" />
 
@@ -40,8 +41,8 @@
                     android:id="@+id/tvID"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/shantell_sans_bold"
-                    android:text="ID 0981"
+                    android:fontFamily="@font/shan_tell_sans_bold"
+                    android:text="@string/order_id"
                     android:textColor="@color/black"
                     android:textSize="18sp" />
             </LinearLayout>
@@ -58,24 +59,24 @@
                     android:id="@+id/tvPrice"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:drawableStart="@drawable/done"
                     android:drawablePadding="10dp"
                     android:fontFamily="@font/roboto"
                     android:text="@string/price_product_demo"
                     android:textColor="@color/black"
-                    android:textSize="18sp" />
+                    android:textSize="18sp"
+                    app:drawableStartCompat="@drawable/done" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="  |  " />
+                    android:text="@string/space" />
 
                 <TextView
                     android:id="@+id/tvQuantity"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/roboto"
-                    android:text="3 món"
+                    android:text="@string/quantity_value"
                     android:textColor="@color/black"
                     android:textSize="18sp" />
 
@@ -91,7 +92,7 @@
             android:layout_weight="1"
             android:fontFamily="@font/roboto"
             android:gravity="center"
-            android:text="10s"
+            android:text="@string/waiting_time_value"
             android:textColor="@color/red"
             android:textSize="18sp" />
 

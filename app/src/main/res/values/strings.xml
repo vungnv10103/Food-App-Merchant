@@ -78,4 +78,19 @@
     <string name="key_map">AIzaSyDOqvpzZHLSZxeeN0EEED41G-1nk5xNKEU</string>
     <string name="price_product_demo">99.999đ</string>
     <string name="out_of_stock">Tạm hết hàng</string>
+    <string name="quantity">nx</string>
+    <string name="confirm_order">Xác nhận đơn hàng</string>
+    <string name="total">Tổng cộng</string>
+    <string name="updating">updating</string>
+    <string name="coupon">Mã khuyễn mãi</string>
+    <string name="total_order">45.000đ (1)</string>
+    <string name="menu">Menu</string>
+    <string name="order_er">Khách hàng:</string>
+    <string name="receive_order">Nhận đơn lúc: dd/MM/yyyy HH:mm</string>
+    <string name="id_order"># ID 0981</string>
+    <string name="waiting_time_value">10:00</string>
+    <string name="quantity_value">3 món</string>
+    <string name="space">|</string>
+    <string name="order_id">ID 0981</string>
+    <string name="char1">#</string>
 </resources>
