@@ -25,6 +25,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -241,7 +242,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
         ImageButton imgShowDetailInfoOrder = dialog.findViewById(R.id.imgShowDetailInfoOrder);
         ImageButton imgShowDetailInfoOrderEr = dialog.findViewById(R.id.imgShowDetailInfoOrderEr);
         TextView tvResult = dialog.findViewById(R.id.tvResult);
-        TextView tvNameOrderEr = dialog.findViewById(R.id.tvNameOrderer);
+        TextView tvNameOrderEr = dialog.findViewById(R.id.tvNameOrderEr);
         TextView tvAddressOrderEr = dialog.findViewById(R.id.tvAddressOrderEr);
         TextView tvPrice = dialog.findViewById(R.id.tvPrice);
         TextView tvWaitingTime = dialog.findViewById(R.id.tvWaitingTime);
@@ -249,6 +250,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
         RecyclerView rcvListOrderByID = dialog.findViewById(R.id.rcvListOrderByID);
 
         Button btnConfirmOrder = dialog.findViewById(R.id.btnConfirmOrder);
+        TextView tvDemo = dialog.findViewById(R.id.tvDemo);
 
 
         // get data
@@ -259,6 +261,9 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 Order order = snapshot.getValue(Order.class);
                 if (order != null) {
+                    int posByUserClient = order.posByUserClient;
+
+
                     String dateTime = order.dateTime;
                     int index = dateTime.indexOf("-");
 
@@ -283,7 +288,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
                         @Override
                         public void onClick(View v) {
                             // show detail time (may be rider) + custom
-                            if(isTvTimeClicked){
+                            if (isTvTimeClicked) {
                                 //This will shrink textview to 2 lines if it is expanded.
                                 tvTimeDone.setMaxLines(1);
                                 imgShowDetailInfoOrder.setImageResource(R.drawable.ic_arrow_down_black);
@@ -299,7 +304,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
                     imgShowDetailInfoOrderEr.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            if(isTvAddress){
+                            if (isTvAddress) {
                                 tvAddressOrderEr.setMaxLines(0);
                                 imgShowDetailInfoOrderEr.setImageResource(R.drawable.ic_arrow_down_black);
                                 isTvAddress = false;
@@ -354,7 +359,25 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
                         @Override
                         public void onClick(View view) {
                             // update status order 1 -> 2
-                            Toast.makeText(context, "current status order: " + order.status, Toast.LENGTH_SHORT).show();
+
+                            DatabaseReference ref = FirebaseDatabase.getInstance().getReference().
+                                    child("list_order").child(idMerchant).child(String.valueOf(pos)).child("status");
+
+                            ref.setValue(2).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void unused) {
+                                    DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("list_order_by_idUserClient")
+                                            .child(idUser).child(String.valueOf(posByUserClient)).child("status");
+                                    ref.setValue(2).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void unused) {
+                                            Toast.makeText(context, "Xác nhận thành công !" + order.status, Toast.LENGTH_SHORT).show();
+                                            dialog.dismiss();
+                                        }
+                                    });
+
+                                }
+                            });
                         }
                     });
 
@@ -384,6 +407,10 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
         dialog.getWindow().setGravity(Gravity.BOTTOM);
         dialog.show();
 
+
+    }
+
+    private void updateStatusListOrderByUserClient(String idUser, int pos, String id) {
 
     }
 

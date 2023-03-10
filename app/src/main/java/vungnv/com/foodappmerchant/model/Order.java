@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 public class Order {
     public int pos;
+    public int posByUserClient;
     public String id;
     public String idUser;
     public String idMerchant;

@@ -155,10 +155,11 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/tvNameOrderer"
+                android:id="@+id/tvNameOrderEr"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="9dp"
+                android:layout_marginStart="10dp"
                 android:layout_marginBottom="9dp"
                 android:fontFamily="@font/roboto_bold"
                 android:maxLines="1"
@@ -328,6 +329,11 @@
             </LinearLayout>
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
+    <TextView
+        android:id="@+id/tvDemo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="demo"/>
 
     <Button
         android:id="@+id/btnConfirmOrder"
