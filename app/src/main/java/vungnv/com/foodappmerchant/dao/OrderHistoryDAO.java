@@ -9,23 +9,24 @@ import android.database.sqlite.SQLiteDatabase;
 import java.util.ArrayList;
 import java.util.List;
 
-import vungnv.com.foodappmerchant.database.DbOrderTemp;
+import vungnv.com.foodappmerchant.database.DbOrder;
 import vungnv.com.foodappmerchant.model.Order;
 
 
-public class OrderDAO {
+public class OrderHistoryDAO {
     private final SQLiteDatabase db;
 
-    public OrderDAO(Context context) {
-        DbOrderTemp dbHelper = new DbOrderTemp(context);
+    public OrderHistoryDAO(Context context) {
+        DbOrder dbHelper = new DbOrder(context);
         db = dbHelper.getWritableDatabase();
     }
 
     public long insert(Order obj) {
         ContentValues values = new ContentValues();
-        values.put("pos", obj.pos);
         values.put("id", obj.id);
+        values.put("pos", obj.pos);
         values.put("idUser", obj.idUser);
+        values.put("idMerchant", obj.idMerchant);
         values.put("dateTime", obj.dateTime);
         values.put("waitingTime", obj.waitingTime);
         values.put("items", obj.items);
@@ -35,14 +36,14 @@ public class OrderDAO {
         values.put("price", obj.price);
         values.put("notes", obj.notes);
 
-        return db.insert("OrdersTemp", null, values);
+        return db.insert("OrderHistory", null, values);
     }
-    public void deleteCart() {
-        db.execSQL("delete from OrdersTemp");
+    public void deleteTempDBOrderHistory() {
+        db.execSQL("delete from OrderHistory");
     }
 
     public int getWaitingTime(String id) {
-        String sql = "SELECT * FROM OrdersTemp WHERE id=?";
+        String sql = "SELECT * FROM OrderHistory WHERE id=?";
         List<Order> order = getData(sql, id);
         if (order.size() == 0) {
             return 0;
@@ -54,32 +55,32 @@ public class OrderDAO {
         ContentValues values = new ContentValues();
         values.put("waitingTime", obj.waitingTime);
 
-        return db.update("OrdersTemp", values, "id=?", new String[]{obj.id});
+        return db.update("OrderHistory", values, "id=?", new String[]{obj.id});
     }
     public int updateCheck(Order obj){
         ContentValues values = new ContentValues();
         values.put("mCheck", obj.check);
-        return db.update("OrdersTemp", values, "id=?", new String[]{obj.id});
+        return db.update("OrderHistory", values, "id=?", new String[]{obj.id});
     }
 
     public int deleteOrderOutOfTime(String id) {
-        return db.delete("OrdersTemp", "id=?", new String[]{id});
+        return db.delete("OrderHistory", "id=?", new String[]{id});
     }
 
 
     public List<Order> getALL(String type) {
-        String sql = "SELECT * FROM OrdersTemp";
+        String sql = "SELECT * FROM OrderHistory";
         return getData(sql, type);
     }
 
 
     public List<Order> getALLDefault(int check) {
-        String sql = "SELECT * FROM OrdersTemp WHERE mCheck=?";
+        String sql = "SELECT * FROM OrderHistory WHERE mCheck=?";
         return getData(sql, String.valueOf(check));
     }
 
     public List<Order> getALLBestSellingByType(String type) {
-        String sql = "SELECT * FROM OrdersTemp WHERE type=? ORDER BY quantity_sold DESC";
+        String sql = "SELECT * FROM OrderHistory WHERE type=? ORDER BY quantity_sold DESC";
         return getData(sql, type);
     }
 
@@ -89,9 +90,10 @@ public class OrderDAO {
         @SuppressLint("Recycle") Cursor cursor = db.rawQuery(sql, selectionArgs);
         while (cursor.moveToNext()) {
             Order obj = new Order();
-            obj.pos = Integer.parseInt(cursor.getString(cursor.getColumnIndex("pos")));
             obj.id = cursor.getString(cursor.getColumnIndex("id"));
+            obj.pos = Integer.parseInt(cursor.getString(cursor.getColumnIndex("pos")));
             obj.idUser = cursor.getString(cursor.getColumnIndex("idUser"));
+            obj.idMerchant = cursor.getString(cursor.getColumnIndex("idMerchant"));
             obj.dateTime = cursor.getString(cursor.getColumnIndex("dateTime"));
             obj.waitingTime = Integer.parseInt(cursor.getString(cursor.getColumnIndex("waitingTime")));
             obj.items = cursor.getString(cursor.getColumnIndex("items"));

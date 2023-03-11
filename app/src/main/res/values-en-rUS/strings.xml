@@ -79,4 +79,19 @@
     <string name="price_product_demo">99.999đ</string>
     <string name="out_of_stock">Temp out of Stock</string>
     <string name="quantity">nx</string>
+    <string name="confirm_order">Order confirmation</string>
+    <string name="total">Total</string>
+    <string name="updating">updating</string>
+    <string name="coupon">Coupon</string>
+    <string name="total_order">45.000đ (1)</string>
+    <string name="menu">Menu</string>
+    <string name="order_er">Orderer: </string>
+    <string name="receive_order">Receive order : dd/MM/yyyy HH:mm</string>
+    <string name="id_order"># ID 0981</string>
+    <string name="waiting_time_value">10:00</string>
+    <string name="quantity_value">3 dishes</string>
+    <string name="space"> | </string>
+    <string name="order_id">ID 0981</string>
+    <string name="char1">#</string>
+    <string name="selectDate">Choose a date</string>
 </resources>

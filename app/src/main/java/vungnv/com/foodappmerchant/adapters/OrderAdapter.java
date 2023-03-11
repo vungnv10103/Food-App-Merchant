@@ -50,6 +50,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
     static boolean isTvTimeClicked = false;
     static boolean isTvAddress = false;
 
+
     createNotificationChannel notification = new createNotificationChannel();
 
 
@@ -80,7 +81,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
         for (String itemPrice : listPrice) {
             price += Double.parseDouble(itemPrice);
         }
-        holder.tvPrice.setText(price + "đ");
+        holder.tvPrice.setText(price + "đ ");
 
         String[] listQuantity = item.quantity.split("-");
         int quantity = 0;
@@ -88,7 +89,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
             quantity += Integer.parseInt(itemQuantity);
         }
 
-        holder.tvQuantity.setText(quantity + " món");
+        holder.tvQuantity.setText(" " + quantity + " món");
 
 
         int sTime = item.waitingTime;
@@ -193,7 +194,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
 
         @Override
         public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-            return oldOrderList.get(oldItemPosition).id == newOrderList.get(newItemPosition).id;
+            return Objects.equals(oldOrderList.get(oldItemPosition).id, newOrderList.get(newItemPosition).id);
         }
 
         @Override
@@ -230,11 +231,12 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
     }
 
     private static void showDialog(Context context, String idMerchant, int pos) {
-
+        final OrderAdapterByID[] orderAdapterByID = {null};
         Dialog dialog = new Dialog(context);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.dialog_view_detail_order);
         dialog.setCancelable(false);
+
 
         TextView tvID = dialog.findViewById(R.id.tvID);
         TextView tvTime = dialog.findViewById(R.id.tvTime);
@@ -345,10 +347,27 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
                         }
                     }
 
-                    OrderAdapterByID orderAdapterByID = new OrderAdapterByID(dialog.getContext(), list1);
-                    rcvListOrderByID.setAdapter(orderAdapterByID);
-                    LinearLayoutManager linearLayoutManager = new LinearLayoutManager(dialog.getContext(), RecyclerView.VERTICAL, false);
-                    rcvListOrderByID.setLayoutManager(linearLayoutManager);
+                    if (list1.isEmpty()) {
+//                    Toast.makeText(getContext(), "Hết đơn", Toast.LENGTH_SHORT).show();
+                        if (orderAdapterByID[0] != null) {
+                            orderAdapterByID[0].updateList(list1);
+                        }
+                    } else {
+                        if (orderAdapterByID[0] == null) {
+                            orderAdapterByID[0] = new OrderAdapterByID(dialog.getContext(), list1);
+                            rcvListOrderByID.setAdapter(orderAdapterByID[0]);
+                            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(dialog.getContext(), RecyclerView.VERTICAL, false);
+                            rcvListOrderByID.setLayoutManager(linearLayoutManager);
+                        } else {
+                            orderAdapterByID[0].updateList(list1);
+                        }
+                    }
+
+
+//                    OrderAdapterByID orderAdapterByID = new OrderAdapterByID(dialog.getContext(), list1);
+//                    rcvListOrderByID.setAdapter(orderAdapterByID);
+//                    LinearLayoutManager linearLayoutManager = new LinearLayoutManager(dialog.getContext(), RecyclerView.VERTICAL, false);
+//                    c.setLayoutManager(linearLayoutManager);
 
                     String idUser = order.idUser;
 
@@ -371,7 +390,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
                                     ref.setValue(2).addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
                                         public void onSuccess(Void unused) {
-                                            Toast.makeText(context, "Xác nhận thành công !" + order.status, Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(context, "Xác nhận thành công !", Toast.LENGTH_SHORT).show();
                                             dialog.dismiss();
                                         }
                                     });

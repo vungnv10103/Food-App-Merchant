@@ -19,6 +19,12 @@ public class Order {
 
     public Order() {
     }
+    public Order(String quantity, String name, String price, String notes) {
+        this.quantity = quantity;
+        this.items = name;
+        this.price = price;
+        this.notes = notes;
+    }
 
     public Order(int pos, String id, String idUser, String dateTime, int waitingTime, String items,
                  String quantity, int status, int check, String price, String notes) {

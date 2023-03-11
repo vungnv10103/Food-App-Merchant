@@ -11,13 +11,14 @@ public interface Constant {
    String ORDER_VI = "Đơn hàng";
    String ORDER_EN = "Order";
    String MANAGE_MENUS = "Quản lý menu";
+   String ORDER_HISTORY = "Lịch sử đơn hàng";
    String Manager_Infor = "Thông tin người quản lý";
    String DB_USER = "User.db";
    String DB_ITEM_CART = "ItemCart.db";
    String DB_CATE = "Categories.db";
    String DB_STATUS_PRODUCT = "StatusProduct.db";
    String DB_PRODUCT = "Product.db";
-   String DB_ORDER = "OrderTemp.db";
+   String DB_ORDER = "OrderHistory.db";
    String DB_PRODUCT_SLIDE_SHOW = "ProductSlideShow.db";
    String DB_DISHES = "Dishes.db";
    int DB_VERSION = 1;

@@ -76,6 +76,7 @@ public class ManageMenuActivatedFragment extends Fragment implements Constant, S
         View view = inflater.inflate(R.layout.fragment_manage_menu_activated, container, false);
 
         init(view);
+        swipeRefreshLayout.setEnabled(false);
         swipeRefreshLayout.setColorSchemeColors(
                 getResources().getColor(R.color.red),
                 getResources().getColor(R.color.green));
@@ -168,7 +169,7 @@ public class ManageMenuActivatedFragment extends Fragment implements Constant, S
                 }
 
                 if (aListProduct.size() == 0) {
-                   // updateStatusMerchant(idUser, 1);
+                    // updateStatusMerchant(idUser, 1);
                     Toast.makeText(getContext(), NO_PRODUCT, Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -180,8 +181,9 @@ public class ManageMenuActivatedFragment extends Fragment implements Constant, S
                 DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(rcvListDishes.getContext(),
                         linearLayoutManager.getOrientation());
                 rcvListDishes.addItemDecoration(dividerItemDecoration);
-                rcvListDishes.setHasFixedSize(true);
-                rcvListDishes.setNestedScrollingEnabled(false);
+//                rcvListDishes.setHasFixedSize(true);
+//                rcvListDishes.setNestedScrollingEnabled(false);
+                linearLayoutManager.setSmoothScrollbarEnabled(true);
 
             }
 
