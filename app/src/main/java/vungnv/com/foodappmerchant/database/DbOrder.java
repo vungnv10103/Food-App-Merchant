@@ -9,17 +9,18 @@ import androidx.annotation.Nullable;
 import vungnv.com.foodappmerchant.constant.Constant;
 
 
-public class DbOrderTemp extends SQLiteOpenHelper implements Constant {
-    public DbOrderTemp(@Nullable Context context) {
+public class DbOrder extends SQLiteOpenHelper implements Constant {
+    public DbOrder(@Nullable Context context) {
         super(context, DB_ORDER, null, DB_VERSION);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String createTableOrder = "create table OrdersTemp(" +
+        String createTableOrderHistory = "create table OrderHistory(" +
                 "id TEXT PRIMARY KEY," +
                 "pos INTEGER not null," +
                 "idUser TEXT not null," +
+                "idMerchant TEXT not null," +
                 "dateTime TEXT not null," +
                 "waitingTime INTEGER not null," +
                 "items TEXT not null," +
@@ -28,13 +29,13 @@ public class DbOrderTemp extends SQLiteOpenHelper implements Constant {
                 "mCheck INTEGER not null," +
                 "notes TEXT ," +
                 "price REAL not null)";
-        db.execSQL(createTableOrder);
+        db.execSQL(createTableOrderHistory);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        String dropTableOrder = "drop table if exists OrdersTemp";
-        db.execSQL(dropTableOrder);
+        String dropTableOrderHistory = "drop table if exists OrderHistory";
+        db.execSQL(dropTableOrderHistory);
 
         onCreate(db);
     }

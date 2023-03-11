@@ -68,6 +68,7 @@ public class OrderFragment extends Fragment implements Constant, SwipeRefreshLay
 
         init(view);
 
+        swipeRefreshLayout.setEnabled(false); // off
         swipeRefreshLayout.setColorSchemeColors(
                 getResources().getColor(R.color.red),
                 getResources().getColor(R.color.green));
@@ -104,7 +105,7 @@ public class OrderFragment extends Fragment implements Constant, SwipeRefreshLay
                     }
                 }
                 if (newOrderList.isEmpty()) {
-                    Toast.makeText(getContext(), "Hết đơn", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(getContext(), "Hết đơn", Toast.LENGTH_SHORT).show();
                     if (orderAdapter != null) {
                         orderAdapter.updateList(newOrderList);
                     }

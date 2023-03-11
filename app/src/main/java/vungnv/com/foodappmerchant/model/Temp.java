@@ -1,6 +1,7 @@
 package vungnv.com.foodappmerchant.model;
 
 public class Temp {
+
     public int quantity;
     public String name;
     public Double price;
