@@ -363,12 +363,6 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
                         }
                     }
 
-
-//                    OrderAdapterByID orderAdapterByID = new OrderAdapterByID(dialog.getContext(), list1);
-//                    rcvListOrderByID.setAdapter(orderAdapterByID);
-//                    LinearLayoutManager linearLayoutManager = new LinearLayoutManager(dialog.getContext(), RecyclerView.VERTICAL, false);
-//                    c.setLayoutManager(linearLayoutManager);
-
                     String idUser = order.idUser;
 
                     tvPrice.setText(price + "đ");
@@ -429,8 +423,5 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
 
     }
 
-    private void updateStatusListOrderByUserClient(String idUser, int pos, String id) {
-
-    }
 
 }
