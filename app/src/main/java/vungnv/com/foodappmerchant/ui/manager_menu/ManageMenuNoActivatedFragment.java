@@ -169,7 +169,7 @@ public class ManageMenuNoActivatedFragment extends Fragment implements Constant,
                 if (aListProduct.size() == 0) {
                     setData(aListProduct);
                     updateStatusMerchant(idUser, 1);
-                    Toast.makeText(getContext(), NO_PRODUCT, Toast.LENGTH_SHORT).show();
+                  //  Toast.makeText(getContext(), NO_PRODUCT, Toast.LENGTH_SHORT).show();
                     return;
                 }
                 updateStatusMerchant(idUser, 2);

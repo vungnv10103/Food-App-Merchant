@@ -129,9 +129,8 @@ public class ShowDetailItemProductActivity extends AppCompatActivity implements 
             } else {
                 getData(idProduct);
             }
-
-
         }
+
 
         // bottom sheet status
 
@@ -206,12 +205,11 @@ public class ShowDetailItemProductActivity extends AppCompatActivity implements 
                 ref.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        aListProducts.clear();
                         for (DataSnapshot childSnapshot1 : snapshot.getChildren()) {
                             Product value = childSnapshot1.getValue(Product.class);
                             assert value != null;
                             if (value.id.equals(id)) {
-                                position = value.pos;
+                                position = Integer.parseInt(Objects.requireNonNull(childSnapshot1.getKey()));
                             }
                         }
 
@@ -238,15 +236,13 @@ public class ShowDetailItemProductActivity extends AppCompatActivity implements 
                             @Override
                             public void onSuccess(Void unused) {
                                 Log.d(TAG, "update status in list_product success");
-                                Toast.makeText(ShowDetailItemProductActivity.this, UPDATE_STATUS_SUCCESS, Toast.LENGTH_SHORT).show();
-
-
                                 DatabaseReference ref = FirebaseDatabase.getInstance()
                                         .getReference().child("list_product_all")
                                         .child(String.valueOf(position)).child("status");
                                 ref.setValue(status).addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void unused) {
+                                        Toast.makeText(ShowDetailItemProductActivity.this, UPDATE_STATUS_SUCCESS, Toast.LENGTH_SHORT).show();
                                         Log.d(TAG, "update status in list_product_all success");
                                     }
                                 });
@@ -307,25 +303,49 @@ public class ShowDetailItemProductActivity extends AppCompatActivity implements 
                 assert bundle != null;
                 int pos = bundle.getInt("pos");
                 int status = bundle.getInt("status");
-                Toast.makeText(ShowDetailItemProductActivity.this, "" + status, Toast.LENGTH_SHORT).show();
-                Log.d(TAG, "temp: " + temp);
-                if (temp > 0) {
-                    if (status == -1) {
-                        updateData(fileName, name, type, Double.parseDouble(price), Double.parseDouble(discount), time, desc);
-                    } else {
-                        updateData(pos, fileName, name, type, Double.parseDouble(price), Double.parseDouble(discount), time, desc);
+
+                // có pos = update in list_product_not_active
+                // k pos = update in list_product
+                // status == -1 => product not active
+
+                String path = "list_product_all";
+                DatabaseReference ref = FirebaseDatabase.getInstance().getReference(path);
+                ref.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        for (DataSnapshot childSnapshot1 : snapshot.getChildren()) {
+                            Product value = childSnapshot1.getValue(Product.class);
+                            assert value != null;
+                            if (value.id.equals(id)) {
+                                int posInAll = Integer.parseInt(Objects.requireNonNull(childSnapshot1.getKey()));
+                                if (temp > 0) { // update include image
+                                    if (status == -1) {
+                                        updateData(fileName, name, type, Double.parseDouble(price), Double.parseDouble(discount), time, desc);
+                                    } else {
+                                        updateData(pos, fileName, name, type, Double.parseDouble(price), Double.parseDouble(discount), time, desc);
+                                    }
+
+                                } else { // update not include image
+                                    if (status == -1) {
+                                        updateData(name, type, Double.parseDouble(price), Double.parseDouble(discount), time, desc);
+                                    } else {
+                                        // here
+                                        updateData(posInAll, pos, name, type, Double.parseDouble(price), Double.parseDouble(discount), time, desc);
+                                    }
+
+                                }
+
+                            }
+                        }
+
                     }
 
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
 
-                } else {
-                    if (status == -1) {
-                        updateData(name, type, Double.parseDouble(price), Double.parseDouble(discount), time, desc);
-                    } else {
-                        updateData(pos, name, type, Double.parseDouble(price), Double.parseDouble(discount), time, desc);
                     }
+                });
 
-
-                }
 
             }
         });
@@ -341,6 +361,7 @@ public class ShowDetailItemProductActivity extends AppCompatActivity implements 
                 btnConfirm = dialog.findViewById(R.id.btnConfirm);
                 btnConfirm.setOnClickListener(v1 -> {
                     //  remove item
+
                     dialog.dismiss();
                 });
                 btnCancel.setOnClickListener(v12 -> dialog.dismiss());
@@ -468,10 +489,9 @@ public class ShowDetailItemProductActivity extends AppCompatActivity implements 
 
                         tvNameProduct.setText(name);
                         setImageProduct(img);
-                        if (status==1){
+                        if (status == 1) {
                             tvOutOfStock.setVisibility(View.VISIBLE);
-                        }
-                        else {
+                        } else {
                             tvOutOfStock.setVisibility(View.INVISIBLE);
                         }
                         edName.setText(name);
@@ -547,7 +567,7 @@ public class ShowDetailItemProductActivity extends AppCompatActivity implements 
 
     }
 
-    private void updateData(int pos, String name, String type, Double price, Double discount,
+    private void updateData(int posInAll, int pos, String name, String type, Double price, Double discount,
                             String time, String desc) {
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         DatabaseReference databaseReference = firebaseDatabase.getReference("list_product/" + auth.getUid()).child(String.valueOf(pos));
@@ -561,8 +581,18 @@ public class ShowDetailItemProductActivity extends AppCompatActivity implements 
         databaseReference.updateChildren(productUpdates, new DatabaseReference.CompletionListener() {
             @Override
             public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
-                Toast.makeText(ShowDetailItemProductActivity.this, UPDATE_SUCCESS, Toast.LENGTH_SHORT).show();
-                progressDialog.dismiss();
+
+                // update in list all
+                FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+                DatabaseReference databaseReference = firebaseDatabase.getReference("list_product_all").child(String.valueOf(posInAll));
+                databaseReference.updateChildren(productUpdates, new DatabaseReference.CompletionListener() {
+                    @Override
+                    public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
+                        Toast.makeText(ShowDetailItemProductActivity.this, UPDATE_SUCCESS, Toast.LENGTH_SHORT).show();
+                        progressDialog.dismiss();
+                    }
+                });
+
             }
         });
 

@@ -32,6 +32,7 @@ import vungnv.com.foodappmerchant.ui.home.OrderFragment;
 import vungnv.com.foodappmerchant.ui.information.InformationFragment;
 import vungnv.com.foodappmerchant.ui.manager_menu.ManageMenuFragment;
 import vungnv.com.foodappmerchant.ui.order_history.OrderHistoryFragment;
+import vungnv.com.foodappmerchant.ui.restaurant_manager.RestaurantManagerFragment;
 import vungnv.com.foodappmerchant.utils.NetworkChangeListener;
 import vungnv.com.foodappmerchant.utils.createNotificationChannel;
 
@@ -132,7 +133,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 Toast.makeText(this, "Đơn hàng khiếu nại", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.restaurant_manager:
-                Toast.makeText(this, "Quản lý nhà hàng", Toast.LENGTH_SHORT).show();
+                replaceFragment(RestaurantManagerFragment.newInstance());
                 break;
             case R.id.menu_manager:
                 //startActivity(new Intent(MainActivity.this, ManageMenuActivity.class));

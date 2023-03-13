@@ -95,4 +95,7 @@
     <string name="char1">#</string>
     <string name="selectDate">Chọn - ngày</string>
     <string name="order_details">Chi tiết đơn hàng</string>
+    <string name="stop_orders">Ngừng nhận đơn hàng</string>
+    <string name="operating_time">Thời gian hoạt động</string>
+    <string name="day_closed">Ngày đóng cửa</string>
 </resources>

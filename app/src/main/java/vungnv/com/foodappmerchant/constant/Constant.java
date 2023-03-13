@@ -12,6 +12,7 @@ public interface Constant {
    String ORDER_EN = "Order";
    String MANAGE_MENUS = "Quản lý menu";
    String ORDER_HISTORY = "Lịch sử đơn hàng";
+   String RESTAURANT_MANAGER = "Quản lý nhà hàng";
    String Manager_Infor = "Thông tin người quản lý";
    String DB_USER = "User.db";
    String DB_ITEM_CART = "ItemCart.db";
