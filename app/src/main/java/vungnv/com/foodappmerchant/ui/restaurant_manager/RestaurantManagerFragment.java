@@ -46,6 +46,8 @@ public class RestaurantManagerFragment extends Fragment implements Constant {
     private SpotsDialog progressDialog;
     private final FirebaseAuth auth = FirebaseAuth.getInstance();
 
+    private boolean isActive = false;
+
 
     public RestaurantManagerFragment() {
         // Required empty public constructor
@@ -86,73 +88,77 @@ public class RestaurantManagerFragment extends Fragment implements Constant {
             }
         });
 
-        aSwitch.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                boolean check = aSwitch.isChecked();
-                Dialog dialog = new Dialog(getContext());
-                if (check) {
-                    dialog.setContentView(R.layout.dialog_confirm_on);
+        if (isActive) {
+            aSwitch.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    boolean check = aSwitch.isChecked();
+                    Dialog dialog = new Dialog(getContext());
+                    if (check) {
+                        dialog.setContentView(R.layout.dialog_confirm_on);
 //                    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                    dialog.setCancelable(false);
+                        dialog.setCancelable(false);
 
 
-                    TextView tvCancel, tvConfirm;
-                    tvCancel = dialog.findViewById(R.id.tvCancel);
-                    tvConfirm = dialog.findViewById(R.id.tvConfirm);
-                    tvCancel.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            aSwitch.setChecked(false);
-                            dialog.dismiss();
-                        }
-                    });
-                    tvConfirm.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            // active stop order
-                            getAllProduct(0, 2);
-                            dialog.dismiss();
-                        }
-                    });
+                        TextView tvCancel, tvConfirm;
+                        tvCancel = dialog.findViewById(R.id.tvCancel);
+                        tvConfirm = dialog.findViewById(R.id.tvConfirm);
+                        tvCancel.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                aSwitch.setChecked(false);
+                                dialog.dismiss();
+                            }
+                        });
+                        tvConfirm.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                // active stop order
+                                getAllProduct(0, 2);
+                                dialog.dismiss();
+                            }
+                        });
 
 
-                }
-                else {
-                    
-                    dialog.setContentView(R.layout.dialog_confirm_off);
+                    } else {
+
+                        dialog.setContentView(R.layout.dialog_confirm_off);
 //                    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                    dialog.setCancelable(false);
+                        dialog.setCancelable(false);
 
 
-                    TextView tvCancel, tvConfirm;
-                    tvCancel = dialog.findViewById(R.id.tvCancel);
-                    tvConfirm = dialog.findViewById(R.id.tvConfirm);
-                    tvCancel.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            aSwitch.setChecked(true);
-                            dialog.dismiss();
-                        }
-                    });
-                    tvConfirm.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            // active stop order
-                            getAllProduct(2, 1);
-                            dialog.dismiss();
-                        }
-                    });
+                        TextView tvCancel, tvConfirm;
+                        tvCancel = dialog.findViewById(R.id.tvCancel);
+                        tvConfirm = dialog.findViewById(R.id.tvConfirm);
+                        tvCancel.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                aSwitch.setChecked(true);
+                                dialog.dismiss();
+                            }
+                        });
+                        tvConfirm.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                // active stop order
+                                getAllProduct(2, 1);
+                                dialog.dismiss();
+                            }
+                        });
 
 
+                    }
+                    dialog.show();
+                    dialog.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                    dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+                    dialog.getWindow().setGravity(Gravity.CENTER);
                 }
-                dialog.show();
-                dialog.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
-                dialog.getWindow().setGravity(Gravity.CENTER);
-            }
-        });
+            });
+        }
+        else {
+            Toast.makeText(getContext(), "updating", Toast.LENGTH_SHORT).show();
+        }
 
 
         tvOperatingTime.setOnClickListener(new View.OnClickListener() {
@@ -235,14 +241,14 @@ public class RestaurantManagerFragment extends Fragment implements Constant {
                     @Override
                     public void onSuccess(Void unused) {
                         String idMerchant = auth.getCurrentUser().getUid();
-                       DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("list_user_merchant").child(idMerchant).child("status");
-                       ref.setValue(statusMerchant).addOnSuccessListener(new OnSuccessListener<Void>() {
-                           @Override
-                           public void onSuccess(Void unused) {
+                        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("list_user_merchant").child(idMerchant).child("status");
+                        ref.setValue(statusMerchant).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void unused) {
 //                               Toast.makeText(getContext(), "Cập nhật thành công", Toast.LENGTH_SHORT).show();
-                               Log.d(TAG, "update status in list_product_all success");
-                           }
-                       });
+                                Log.d(TAG, "update status in list_product_all success");
+                            }
+                        });
                     }
                 });
 
