@@ -196,8 +196,7 @@ public class ManageMenuNoActivatedFragment extends Fragment implements Constant,
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(rcvListDishes.getContext(),
                 linearLayoutManager.getOrientation());
         rcvListDishes.addItemDecoration(dividerItemDecoration);
-        rcvListDishes.setHasFixedSize(true);
-        rcvListDishes.setNestedScrollingEnabled(false);
+        linearLayoutManager.setSmoothScrollbarEnabled(true);
     }
 
     @Override

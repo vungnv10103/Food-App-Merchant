@@ -90,6 +90,7 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.viewHo
         bundle.putInt("status", status);
         bundle.putString("name", name);
         bundle.putString("temp", String.valueOf(pos));
+        Toast.makeText(context, "send pos: " + pos, Toast.LENGTH_SHORT).show();
 
         intent.putExtra("data-type", bundle);
         context.startActivity(intent);

@@ -2,7 +2,7 @@
     <!-- Base application theme. -->
     <style name="Theme.FoodAppMerchant" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">#ff5353</item>
+        <item name="colorPrimary">@color/orange</item>
         <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
         <item name="colorPrimaryVariant">#ff5353</item>
         <item name="colorOnPrimary">@color/white</item>

@@ -122,7 +122,6 @@ public class ShowDetailItemProductActivity extends AppCompatActivity implements 
         if (bundle != null) {
             String idProduct = bundle.getString("id");
             int status = bundle.getInt("status");
-            int pos = Integer.parseInt(bundle.getString("temp"));
             String name = bundle.getString("name");
             if (status == -1) {
                 getDataNoActive(name);
@@ -301,7 +300,7 @@ public class ShowDetailItemProductActivity extends AppCompatActivity implements 
                 String desc = edDesc.getText().toString().trim();
 
                 assert bundle != null;
-                int pos = bundle.getInt("pos");
+                int pos = Integer.parseInt(bundle.getString("temp"));
                 int status = bundle.getInt("status");
 
                 // có pos = update in list_product_not_active
@@ -329,7 +328,6 @@ public class ShowDetailItemProductActivity extends AppCompatActivity implements 
                                     if (status == -1) {
                                         updateData(name, type, Double.parseDouble(price), Double.parseDouble(discount), time, desc);
                                     } else {
-                                        // here
                                         updateData(posInAll, pos, name, type, Double.parseDouble(price), Double.parseDouble(discount), time, desc);
                                     }
 

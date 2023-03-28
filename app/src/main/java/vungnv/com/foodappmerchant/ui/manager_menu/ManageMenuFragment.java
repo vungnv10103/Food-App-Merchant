@@ -53,6 +53,7 @@ public class ManageMenuFragment extends Fragment {
         tabLayout = view.findViewById(R.id.tabLayout);
         tabMenuAdapter = new TabMenuAdapter(requireActivity());
         viewPager2.setAdapter(tabMenuAdapter);
+
         TabLayoutMediator tabLayoutMediator = new TabLayoutMediator(tabLayout, viewPager2, new TabLayoutMediator.TabConfigurationStrategy() {
             @Override
             public void onConfigureTab(@NonNull TabLayout.Tab tab, int position) {
