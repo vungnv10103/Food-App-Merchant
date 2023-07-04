@@ -104,7 +104,7 @@ public class RegisterActivity extends AppCompatActivity implements Constant {
                         StorageReference storageRef = FirebaseStorage.getInstance().getReference();
 
                         // Create a reference to the file to upload
-                        fileName = uri.getLastPathSegment().substring(6);
+                        fileName = uri.getLastPathSegment().substring(6) + ".png";
                         StorageReference imageRef = storageRef.child("images_users/" + fileName);
                         Log.d(TAG, "onImagePicked: " + uri.getLastPathSegment().substring(6));
                         //Upload the file to the reference
@@ -328,7 +328,7 @@ public class RegisterActivity extends AppCompatActivity implements Constant {
             byte[] data1 = baos.toByteArray();
 
             // Create a reference to the image file in Firebase Storage
-            fileName = generateUniqueRandomSequence(10);
+            fileName = generateUniqueRandomSequence(10) + ".png";
             StorageReference imageRef = imagesRef.child(fileName);
 
             // Upload the file to Firebase Storage

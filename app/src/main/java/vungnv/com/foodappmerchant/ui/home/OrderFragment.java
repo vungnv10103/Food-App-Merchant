@@ -26,6 +26,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import dmax.dialog.SpotsDialog;
@@ -104,6 +105,7 @@ public class OrderFragment extends Fragment implements Constant, SwipeRefreshLay
                         newOrderList.add(order);
                     }
                 }
+//                Collections.reverse(newOrderList);
                 if (newOrderList.isEmpty()) {
 //                    Toast.makeText(getContext(), "Hết đơn", Toast.LENGTH_SHORT).show();
                     if (orderAdapter != null) {
